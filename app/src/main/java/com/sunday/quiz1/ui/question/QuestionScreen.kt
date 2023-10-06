@@ -10,10 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.ui.common.AppEvent
+import com.sunday.quiz1.R
 
 @Composable
 fun QuestionScreen(
@@ -42,24 +44,19 @@ fun QuestionScreen(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(20.dp)
     ) {
+        TextNumberOfQuestion(index)
         MyProgressIndicator(index)
-        Text(
-            text = "Pregunta".uppercase(),
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            modifier = Modifier.padding(20.dp)
-        )
-        Text(
-            text = Question.getOne(index).question.uppercase(),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth()
-        )
+        TextTitle()
+        TextQuestion(index)
         RadioButtonGroup(questionVM, index)
         ButtonGroup(questionVM, index)
     }
+}
+
+@Composable
+fun TextNumberOfQuestion(index: Int) {
+    Text(text = stringResource(id = R.string.question_number,
+    index+1, Question.getSize()))
 }
 
 @Composable
@@ -67,6 +64,29 @@ fun MyProgressIndicator(index: Int) {
     LinearProgressIndicator(
         progress = (index + 1) / Question.getSize().toFloat()
     )
+}
+
+@Composable
+fun TextTitle() {
+    Text(
+        text = "Pregunta".uppercase(),
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        modifier = Modifier.padding(20.dp)
+    )
+}
+
+@Composable
+fun TextQuestion(index: Int) {
+    Text(
+        text = Question.getOne(index).question.uppercase(),
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp,
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()
+    )
+
 }
 
 @Composable

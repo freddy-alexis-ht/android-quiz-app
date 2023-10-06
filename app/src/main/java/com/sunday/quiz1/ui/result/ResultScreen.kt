@@ -2,6 +2,7 @@ package com.sunday.quiz1.ui.result
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -42,9 +43,9 @@ fun ResultScreen(
     }
 
     Column(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier.padding(20.dp)
+        verticalArrangement = Arrangement.Top,
     ) {
         Text(
             text = "Resumen".uppercase(),
