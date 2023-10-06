@@ -9,7 +9,9 @@ import com.sunday.quiz1.ui.home.HomeVM
 import com.sunday.quiz1.ui.question.QuestionVM
 import com.sunday.quiz1.ui.result.ResultVM
 import com.sunday.quiz1.ui.theme.Quiz1Theme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val homeVM: HomeVM by viewModels()

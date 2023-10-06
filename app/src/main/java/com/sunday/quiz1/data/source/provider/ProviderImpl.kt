@@ -3,8 +3,9 @@ package com.sunday.quiz1.data.source.provider
 import com.sunday.quiz1.data.Answer
 import com.sunday.quiz1.data.UiText
 import com.sunday.quiz1.data.model.QuestionModel
+import javax.inject.Inject
 
-class ProviderImpl: IProvider {
+class ProviderImpl @Inject constructor(): IProvider {
     override suspend fun getQuestions(): Answer<List<QuestionModel>> {
         val questions: List<QuestionModel> = QuestionModel.getList()
         return Answer.Success(data = questions)

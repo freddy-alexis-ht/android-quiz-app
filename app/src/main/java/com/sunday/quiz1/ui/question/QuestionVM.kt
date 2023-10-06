@@ -6,14 +6,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sunday.quiz1.data.model.QuestionModel
+import com.sunday.quiz1.domain.use_case.GetQuestionUseCase
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.result.ResultState
 import com.sunday.quiz1.ui.common.Routes
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class QuestionVM : ViewModel() {
+@HiltViewModel
+class QuestionVM @Inject constructor(
+    private val getQuestionUseCase: GetQuestionUseCase,
+) : ViewModel() {
 
     var state by mutableStateOf(QuestionState())
         private set
@@ -90,10 +97,15 @@ class QuestionVM : ViewModel() {
             i = Question.getOne(index).options.indexOf(state.optionSelected)
         }
 
+//        viewModelScope.launch {
+//            val questionUseCase: QuestionModel? = getQuestionUseCase(index).data
+//            var b: Boolean? = if (i != -1) questionUseCase!!.results[i]
+//            else null
+//            state.userAnswers[index] = b
+//        }
         var b: Boolean? = if (i != -1) Question.getOne(index).results[i]
         else null
 
-        state.userAnswers[index] = b
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
         }
