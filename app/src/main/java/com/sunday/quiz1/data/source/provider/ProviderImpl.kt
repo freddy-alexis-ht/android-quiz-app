@@ -1,7 +1,6 @@
 package com.sunday.quiz1.data.source.provider
 
 import com.sunday.quiz1.data.Answer
-import com.sunday.quiz1.data.UiText
 import com.sunday.quiz1.data.model.QuestionModel
 import javax.inject.Inject
 

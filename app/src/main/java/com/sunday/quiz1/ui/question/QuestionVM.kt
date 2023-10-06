@@ -105,6 +105,7 @@ class QuestionVM @Inject constructor(
 //        }
         var b: Boolean? = if (i != -1) Question.getOne(index).results[i]
         else null
+        state.userAnswers[index] = b
 
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
