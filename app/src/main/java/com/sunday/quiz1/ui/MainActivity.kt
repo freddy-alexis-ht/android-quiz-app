@@ -1,4 +1,4 @@
-package com.sunday.quiz1
+package com.sunday.quiz1.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
