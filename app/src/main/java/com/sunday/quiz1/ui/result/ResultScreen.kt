@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.question.QuestionVM
+import com.sunday.quiz1.R
 
 /*
 * Habiendo presionado 'Finalizar' en la última pregunta, se recibe List<Boolean>
@@ -33,6 +35,8 @@ fun ResultScreen(
     resultVM: ResultVM,
     questionVM: QuestionVM
 ) {
+    val result = questionVM.resultState
+
     LaunchedEffect(key1 = true) {
         resultVM.appEvent.collect { event ->
             when (event) {
@@ -47,31 +51,79 @@ fun ResultScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
-        Text(
-            text = "Resumen".uppercase(),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(20.dp)
-        )
-        Text(
-            text = "Total de preguntas: ${questionVM.resultState.totalQuestions}",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = "${questionVM.resultState.totalCorrect} .. preguntas correctas: ${questionVM.resultState.correctQuestions}",
-            fontSize = 16.sp
-        )
-        Text(
-            text = "${questionVM.resultState.totalIncorrect} .. preguntas incorrectas: ${questionVM.resultState.incorrectQuestions}",
-            fontSize = 16.sp
-        )
-        Text(
-            text = "${questionVM.resultState.totalNotAnswered} .. preguntas no contestadas: ${questionVM.resultState.notAnsweredQuestions}",
-            fontSize = 16.sp
-        )
-        Button(onClick = { resultVM.onEvent(ResultEvent.OnHome) }) {
-            Text(text = "Home".uppercase())
-        }
+        TextSummary()
+        TextTotalOfQuestions(result.totalQuestions)
+        TextCorrectAnswers(result.totalCorrect, result.correctQuestions)
+        TextIncorrectAnswers(result.totalIncorrect, result.incorrectQuestions)
+        TextNotAnswered(result.totalNotAnswered, result.notAnsweredQuestions)
+        ButtonHome(onHome = { resultVM.onEvent(ResultEvent.OnHome) })
+//        Button(onClick = { resultVM.onEvent(ResultEvent.OnHome) }) {
+//            Text(text = "Home".uppercase())
+//        }
+    }
+}
+
+@Composable
+fun TextSummary() {
+    Text(
+        text = stringResource(id = R.string.result_summary).uppercase(),
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(20.dp)
+    )
+}
+
+@Composable
+fun TextTotalOfQuestions(totalOfQuestions: Int) {
+    Text(
+        text = stringResource(
+            id = R.string.result_total_of_questions,
+            totalOfQuestions
+        ),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
+fun TextCorrectAnswers(totalCorrect: Int, correctQuestions: String) {
+    Text(
+        text = stringResource(
+            id = R.string.result_correct_answers,
+            totalCorrect,
+            correctQuestions
+        ),
+        fontSize = 16.sp
+    )
+}
+
+@Composable
+fun TextIncorrectAnswers(totalIncorrect: Int, incorrectQuestions: String) {
+    Text(
+        text = stringResource(
+            id = R.string.result_incorrect_answers,
+            totalIncorrect,
+            incorrectQuestions
+        ),
+        fontSize = 16.sp
+    )
+}
+
+@Composable
+fun TextNotAnswered(totalNotAnswered: Int, notAnsweredQuestions: String) {
+    Text(
+        text = stringResource(
+            id = R.string.result_not_answered,
+            totalNotAnswered,
+            notAnsweredQuestions
+        ),
+        fontSize = 16.sp
+    )
+}
+
+@Composable
+fun ButtonHome(onHome: () -> Unit) {
+    Button(onClick = onHome) {
+        Text(text = stringResource(id = R.string.result_home).uppercase())
     }
 }

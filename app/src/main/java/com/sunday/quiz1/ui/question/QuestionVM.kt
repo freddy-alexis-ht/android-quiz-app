@@ -6,8 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sunday.quiz1.data.model.QuestionModel
-import com.sunday.quiz1.domain.use_case.GetQuestionUseCase
+import com.sunday.quiz1.data.model.Question
+import com.sunday.quiz1.domain.use_case.GetAllQuestionsUseCase
+import com.sunday.quiz1.domain.use_case.GetOneQuestionUseCase
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.result.ResultState
 import com.sunday.quiz1.ui.common.Routes
@@ -19,8 +20,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionVM @Inject constructor(
-    private val getQuestionUseCase: GetQuestionUseCase,
+    private val getAllQuestionsUseCase: GetAllQuestionsUseCase,
+    private val getOneQuestionUseCase: GetOneQuestionUseCase,
 ) : ViewModel() {
+
+    lateinit var questions: List<Question>
+
+    init {
+        viewModelScope.launch {
+            questions = getAllQuestionsUseCase().data!!
+        }
+    }
 
     var state by mutableStateOf(QuestionState())
         private set
@@ -66,7 +76,7 @@ class QuestionVM @Inject constructor(
     private fun onFinish(index: Int) {
         validateUserOption(index)
         generateQuizResults()
-        for (i in 0 until Question.getSize()) {
+        for (i in questions.indices) {
             userOptions[i] = ""
         }
         state = state.copy(index = 0)
@@ -90,22 +100,19 @@ class QuestionVM @Inject constructor(
 
     /* Utilitary functions */
     private fun validateUserOption(index: Int) {
-        var i: Int
-        if (userOptions[index] != "") {
-            i = Question.getOne(index).options.indexOf(userOptions[index])
-        } else {
-            i = Question.getOne(index).options.indexOf(state.optionSelected)
-        }
+        var userAnswer = if(userOptions[index] != "") userOptions[index]
+        else state.optionSelected
 
 //        viewModelScope.launch {
-//            val questionUseCase: QuestionModel? = getQuestionUseCase(index).data
+//            val questionUseCase: Question? = getQuestionUseCase(index).data
 //            var b: Boolean? = if (i != -1) questionUseCase!!.results[i]
 //            else null
 //            state.userAnswers[index] = b
 //        }
-        var b: Boolean? = if (i != -1) Question.getOne(index).results[i]
-        else null
-        state.userAnswers[index] = b
+        var userBoolean = if(userAnswer == "") null
+        else userAnswer == questions[index].result
+
+        state.userAnswers[index] = userBoolean
 
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
@@ -114,7 +121,7 @@ class QuestionVM @Inject constructor(
 
     private fun generateQuizResults() {
         resultState = resultState.copy(
-            totalQuestions = Question.getSize(),
+            totalQuestions = questions.size,
             totalCorrect = state.userAnswers.count { it == true },
             totalIncorrect = state.userAnswers.count { it == false },
             totalNotAnswered = state.userAnswers.count { it == null },
@@ -155,7 +162,7 @@ class QuestionVM @Inject constructor(
     }
 
     fun clearUserOptions() {
-        for (i in 0 until Question.getSize()) {
+        for (i in questions.indices) {
             userOptions[i] = ""
         }
         state = state.copy(

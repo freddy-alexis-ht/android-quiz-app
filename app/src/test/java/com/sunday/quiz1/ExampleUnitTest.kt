@@ -1,6 +1,6 @@
 package com.sunday.quiz1
 
-import com.sunday.quiz1.ui.question.Question
+import com.sunday.quiz1.data.model.Question
 import org.junit.Test
 
 /**

@@ -1,17 +1,17 @@
 package com.sunday.quiz1.data.source.provider
 
 import com.sunday.quiz1.data.Answer
-import com.sunday.quiz1.data.model.QuestionModel
+import com.sunday.quiz1.data.model.Question
 import javax.inject.Inject
 
 class ProviderImpl @Inject constructor(): IProvider {
-    override suspend fun getQuestions(): Answer<List<QuestionModel>> {
-        val questions: List<QuestionModel> = QuestionModel.getList()
+    override suspend fun getQuestions(): Answer<List<Question>> {
+        val questions: List<Question> = Question.getList()
         return Answer.Success(data = questions)
     }
 
-    override suspend fun getQuestion(index: Int): Answer<QuestionModel> {
-        val question: QuestionModel = QuestionModel.getOne(index)
+    override suspend fun getQuestion(index: Int): Answer<Question> {
+        val question: Question = Question.getOne(index)
         return Answer.Success(data = question)
     }
 }

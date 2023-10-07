@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.R
+import com.sunday.quiz1.data.model.Question
 
 @Composable
 fun QuestionScreen(
@@ -24,6 +25,8 @@ fun QuestionScreen(
     newQuiz: Boolean?
 ) {
     var index = questionVM.state.index
+    val questions = questionVM.questions
+    val numberOfQuestions = questionVM.questions.size
 
     LaunchedEffect(key1 = true) {
         questionVM.appEvent.collect { event ->
@@ -44,25 +47,25 @@ fun QuestionScreen(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(20.dp)
     ) {
-        TextNumberOfQuestion(index)
-        MyProgressIndicator(index)
+        TextNumberOfQuestion(index, numberOfQuestions)
+        MyProgressIndicator(index, numberOfQuestions)
         TextTitle()
-        TextQuestion(index)
-        RadioButtonGroup(questionVM, index)
+        TextQuestion(index, questions)
+        RadioButtonGroup(questionVM, index, questions)
         ButtonGroup(questionVM, index)
     }
 }
 
 @Composable
-fun TextNumberOfQuestion(index: Int) {
+fun TextNumberOfQuestion(index: Int, numberOfQuestions: Int) {
     Text(text = stringResource(id = R.string.question_number,
-    index+1, Question.getSize()))
+    index+1, numberOfQuestions))
 }
 
 @Composable
-fun MyProgressIndicator(index: Int) {
+fun MyProgressIndicator(index: Int, numberOfQuestions: Int) {
     LinearProgressIndicator(
-        progress = (index + 1) / Question.getSize().toFloat()
+        progress = (index + 1) / numberOfQuestions.toFloat()
     )
 }
 
@@ -77,9 +80,9 @@ fun TextTitle() {
 }
 
 @Composable
-fun TextQuestion(index: Int) {
+fun TextQuestion(index: Int, questions: List<Question>) {
     Text(
-        text = Question.getOne(index).question.uppercase(),
+        text = questions[index].question.uppercase(),
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         modifier = Modifier
@@ -90,9 +93,9 @@ fun TextQuestion(index: Int) {
 }
 
 @Composable
-fun RadioButtonGroup(questionVM: QuestionVM, index: Int) {
+fun RadioButtonGroup(questionVM: QuestionVM, index: Int, questions: List<Question>) {
 
-    val options: List<String> = Question.getOne(index).options
+    val options: List<String> = questions[index].options
 
     options.forEach {
 
@@ -117,23 +120,23 @@ fun ButtonGroup(questionVM: QuestionVM, index: Int) {
     Row(horizontalArrangement = Arrangement.Center) {
         if (index != 0) {
             Button(onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) }) {
-                Text(text = "Atrás".uppercase())
+                Text(text = stringResource(id = R.string.question_previous).uppercase())
             }
         }
         if (index != Question.getList().size - 1) {
             Button(onClick = { questionVM.onEvent(QuestionEvent.OnNext(index)) }) {
-                Text(text = "Siguiente".uppercase())
+                Text(text = stringResource(id = R.string.question_next).uppercase())
             }
         }
     }
     Row(horizontalArrangement = Arrangement.Center) {
         if (index == Question.getList().size - 1) {
             Button(onClick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) }) {
-                Text(text = "Finalizar".uppercase())
+                Text(text = stringResource(id = R.string.question_finish).uppercase())
             }
         }
         Button(onClick = { questionVM.onEvent((QuestionEvent.OnHome)) }) {
-            Text(text = "Home".uppercase())
+            Text(text = stringResource(id = R.string.question_home).uppercase())
         }
     }
 }
