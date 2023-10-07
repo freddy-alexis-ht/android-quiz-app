@@ -57,30 +57,13 @@ fun QuestionScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            TextNumberOfQuestion2(index, numberOfQuestions)
+            TextNumberOfQuestion(index, numberOfQuestions)
             MyHorizontalSpacer12Dp()
-            MyProgressIndicator2(index, numberOfQuestions, Modifier.weight(1.0f, true))
+            MyProgressIndicator(index, numberOfQuestions, Modifier.weight(1.0f, true))
             MyHorizontalSpacer12Dp()
-//            if (index != 0) {
-            Card(
-                shape = RoundedCornerShape(24.dp)
-            ){
-                IconButton(
-                    onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) },
-                    modifier = Modifier.background(MaterialTheme.colors.secondary),
-                    enabled = index != 0,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(id = R.string.question_previous),
-                    )
-                }
-            }
-//            }
+            IconButtonPrevious(questionVM, index)
         }
-//        TextNumberOfQuestion(index, numberOfQuestions)
-//        MyProgressIndicator(index, numberOfQuestions)
-//        TextTitle()
+
         MyVerticalSpacer16Dp()
         TextQuestion(index, questions)
         MyVerticalSpacer16Dp()
@@ -95,33 +78,30 @@ fun TextNumberOfQuestion(index: Int, numberOfQuestions: Int) {
     Text(text = stringResource(id = R.string.question_number,
     index+1, numberOfQuestions))
 }
-@Composable
-fun TextNumberOfQuestion2(index: Int, numberOfQuestions: Int) {
-    Text(text = stringResource(id = R.string.question_number_v2,
-    index+1, numberOfQuestions))
-}
 
 @Composable
-fun MyProgressIndicator(index: Int, numberOfQuestions: Int) {
-    LinearProgressIndicator(
-        progress = (index + 1) / numberOfQuestions.toFloat()
-    )
-}
-@Composable
-fun MyProgressIndicator2(index: Int, numberOfQuestions: Int, modifier: Modifier = Modifier) {
+fun MyProgressIndicator(index: Int, numberOfQuestions: Int, modifier: Modifier = Modifier) {
     LinearProgressIndicator(
         progress = (index + 1) / numberOfQuestions.toFloat()
     )
 }
 
 @Composable
-fun TextTitle() {
-    Text(
-        text = "Pregunta".uppercase(),
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        modifier = Modifier.padding(20.dp)
-    )
+fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
+    Card(
+        shape = RoundedCornerShape(24.dp)
+    ){
+        IconButton(
+            onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) },
+            modifier = Modifier.background(MaterialTheme.colors.secondary),
+            enabled = index != 0,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = stringResource(id = R.string.question_previous),
+            )
+        }
+    }
 }
 
 @Composable
@@ -166,35 +146,22 @@ fun RadioButtonGroup(questionVM: QuestionVM, index: Int, questions: List<Questio
 
 @Composable
 fun ButtonGroup(questionVM: QuestionVM, index: Int) {
-    Row(horizontalArrangement = Arrangement.Center) {
-//        if (index != 0) {
-//            Button(onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) }) {
-//                Text(text = stringResource(id = R.string.question_previous).uppercase())
-//            }
-//        }
-        if (index != Question.getList().size - 1) {
-            MyButton(onclick = { questionVM.onEvent(QuestionEvent.OnNext(index)) }, text = stringResource(id = R.string.question_next).uppercase())
-//            Button(onClick = { questionVM.onEvent(QuestionEvent.OnNext(index)) }) {
-//                Text(text = stringResource(id = R.string.question_next).uppercase())
-//            }
-        }
+    if (index != Question.getList().size - 1) {
+        MyButton(
+            onclick = { questionVM.onEvent(QuestionEvent.OnNext(index)) },
+            text = stringResource(id = R.string.question_next).uppercase()
+        )
+    } else {
+        MyButton(
+            onclick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) },
+            text = stringResource(id = R.string.question_finish).uppercase()
+        )
     }
     MyVerticalSpacer16Dp()
-    Row(horizontalArrangement = Arrangement.Center) {
-        if (index == Question.getList().size - 1) {
-            MyButton(onclick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) }, text = stringResource(id = R.string.question_finish).uppercase())
-//            Button(onClick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) }) {
-//                Text(text = stringResource(id = R.string.question_finish).uppercase())
-//            }
-        }
-        MyButton(
-            onclick = { questionVM.onEvent((QuestionEvent.OnHome)) },
-            text = stringResource(id = R.string.question_home).uppercase(),
-            colors = MaterialTheme.colors.surface
-        )
-//        Button(onClick = { questionVM.onEvent((QuestionEvent.OnHome)) }) {
-//            Text(text = stringResource(id = R.string.question_home).uppercase())
-//        }
-    }
+    MyButton(
+        onclick = { questionVM.onEvent((QuestionEvent.OnHome)) },
+        text = stringResource(id = R.string.question_home).uppercase(),
+        colors = MaterialTheme.colors.surface
+    )
 }
 

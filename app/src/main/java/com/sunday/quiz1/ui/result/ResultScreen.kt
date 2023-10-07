@@ -19,17 +19,6 @@ import com.sunday.quiz1.ui.question.QuestionVM
 import com.sunday.quiz1.R
 import com.sunday.quiz1.ui.common.MyVerticalSpacer16Dp
 
-/*
-* Habiendo presionado 'Finalizar' en la última pregunta, se recibe List<Boolean>
-*   P.e. {true, true, false}
-*   Total de preguntas = tamaño de la lista
-*   Total de preguntas correctas = conteo de los 'true'
-*   Total de preguntas incorrectas = conteo de los 'false' (o resta de lo anterior)
-*   Preguntas correctas = recorrer y mostrar índice+1 de los 'true'
-*   Preguntas incorrectas = recorrer y mostrar índice+1 de los 'false'
-* Al presionar 'Home', ya que isNew=false muestra: botones: Iniciar, Salir
-* */
-
 @Composable
 fun ResultScreen(
     onNavigate: (AppEvent.Navigate) -> Unit,
@@ -62,9 +51,6 @@ fun ResultScreen(
         TextNotAnswered(result.totalNotAnswered, result.notAnsweredQuestions)
         MyVerticalSpacer16Dp()
         ButtonHome(onHome = { resultVM.onEvent(ResultEvent.OnHome) })
-//        Button(onClick = { resultVM.onEvent(ResultEvent.OnHome) }) {
-//            Text(text = "Home".uppercase())
-//        }
     }
 }
 
