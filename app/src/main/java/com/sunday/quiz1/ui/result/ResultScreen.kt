@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.question.QuestionVM
 import com.sunday.quiz1.R
+import com.sunday.quiz1.ui.common.MyVerticalSpacer16Dp
 
 /*
 * Habiendo presionado 'Finalizar' en la última pregunta, se recibe List<Boolean>
@@ -53,9 +54,13 @@ fun ResultScreen(
     ) {
         TextSummary()
         TextTotalOfQuestions(result.totalQuestions)
+        MyVerticalSpacer16Dp()
         TextCorrectAnswers(result.totalCorrect, result.correctQuestions)
+        MyVerticalSpacer16Dp()
         TextIncorrectAnswers(result.totalIncorrect, result.incorrectQuestions)
+        MyVerticalSpacer16Dp()
         TextNotAnswered(result.totalNotAnswered, result.notAnsweredQuestions)
+        MyVerticalSpacer16Dp()
         ButtonHome(onHome = { resultVM.onEvent(ResultEvent.OnHome) })
 //        Button(onClick = { resultVM.onEvent(ResultEvent.OnHome) }) {
 //            Text(text = "Home".uppercase())
@@ -69,7 +74,7 @@ fun TextSummary() {
         text = stringResource(id = R.string.result_summary).uppercase(),
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(vertical = 40.dp)
     )
 }
 

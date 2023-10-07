@@ -9,6 +9,7 @@
 
     <!-- Question -->
     <string name="question_number">%1$d de %2$d</string>
+    <string name="question_number_v2">%1$d / %2$d</string>
     <string name="question_previous">Atrás</string>
     <string name="question_next">Siguiente</string>
     <string name="question_finish">Finalizar</string>

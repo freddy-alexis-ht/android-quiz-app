@@ -1,10 +1,7 @@
 package com.sunday.quiz1.ui.home
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,8 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.R
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.common.MyButton
-import com.sunday.quiz1.ui.common.MySpacer16Dp
-import com.sunday.quiz1.ui.theme.Purple200
+import com.sunday.quiz1.ui.common.MyVerticalSpacer16Dp
 import com.sunday.quiz1.ui.theme.Quiz1Theme
 
 @Composable
@@ -53,14 +49,14 @@ fun HomeScreen(
                 onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
                 text = stringResource(id = R.string.home_continue)
             )
-            MySpacer16Dp()
+            MyVerticalSpacer16Dp()
             MyButton(
                 onclick = { homeVM.onEvent(HomeEvent.OnStart) },
                 text = stringResource(id = R.string.home_restart),
                 colors = Color.Gray
             )
         }
-        MySpacer16Dp()
+        MyVerticalSpacer16Dp()
         MyButton(
             onclick = { homeVM.onEvent(HomeEvent.OnExit) },
             text = stringResource(id = R.string.home_exit),
