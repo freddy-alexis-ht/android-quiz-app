@@ -7,6 +7,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sunday.quiz1.data.model.Question
+import com.sunday.quiz1.data.model.Timer
 import com.sunday.quiz1.domain.use_case.GetAllQuestionsUseCase
 import com.sunday.quiz1.domain.use_case.GetOneQuestionUseCase
 import com.sunday.quiz1.ui.common.AppEvent
@@ -25,13 +26,14 @@ class QuestionVM @Inject constructor(
 ) : ViewModel() {
 
     lateinit var questions: List<Question>
-
     init {
         viewModelScope.launch {
             questions = getAllQuestionsUseCase().data!!
         }
     }
 
+    var timer by mutableStateOf(Timer())
+        private set
     var state by mutableStateOf(QuestionState())
         private set
     var userOptions = state.userOptions.toMutableStateList()
@@ -48,6 +50,7 @@ class QuestionVM @Inject constructor(
             is QuestionEvent.OnPrevious -> onPrevious(event.index)
             is QuestionEvent.OnNext -> onNext(event.index)
             is QuestionEvent.OnFinish -> onFinish(event.index)
+            is QuestionEvent.OnJumpTo -> state = state.copy(index = event.index)
             QuestionEvent.OnHome -> onHome()
         }
     }

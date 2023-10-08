@@ -5,5 +5,6 @@ sealed class QuestionEvent {
     data class OnPrevious(val index: Int): QuestionEvent()
     data class OnNext(val index: Int): QuestionEvent()
     data class OnFinish(val index: Int): QuestionEvent()
+    data class OnJumpTo(val index: Int): QuestionEvent()
     object OnHome: QuestionEvent()
 }

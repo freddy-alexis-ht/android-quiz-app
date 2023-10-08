@@ -39,3 +39,7 @@ fun MyVerticalSpacer16Dp() {
 fun MyHorizontalSpacer12Dp() {
     Spacer(modifier = Modifier.width(12.dp))
 }
+@Composable
+fun MyHorizontalSpacer8Dp() {
+    Spacer(modifier = Modifier.width(8.dp))
+}
