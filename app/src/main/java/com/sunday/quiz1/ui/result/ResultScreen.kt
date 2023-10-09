@@ -1,11 +1,8 @@
 package com.sunday.quiz1.ui.result
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -17,7 +14,8 @@ import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.question.QuestionVM
 import com.sunday.quiz1.R
-import com.sunday.quiz1.ui.common.MyVerticalSpacer16Dp
+import com.sunday.quiz1.ui.common.MyVerticalSpacer
+import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
 fun ResultScreen(
@@ -37,19 +35,30 @@ fun ResultScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.mediumPlus),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {
         TextSummary()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
         TextTotalOfQuestions(result.totalQuestions)
-        MyVerticalSpacer16Dp()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+        RowCorrect(result.totalCorrect, result.correctQuestions)
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
         TextCorrectAnswers(result.totalCorrect, result.correctQuestions)
-        MyVerticalSpacer16Dp()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
         TextIncorrectAnswers(result.totalIncorrect, result.incorrectQuestions)
-        MyVerticalSpacer16Dp()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
         TextNotAnswered(result.totalNotAnswered, result.notAnsweredQuestions)
-        MyVerticalSpacer16Dp()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
         ButtonHome(onHome = { resultVM.onEvent(ResultEvent.OnHome) })
     }
 }
@@ -57,10 +66,8 @@ fun ResultScreen(
 @Composable
 fun TextSummary() {
     Text(
-        text = stringResource(id = R.string.result_summary).uppercase(),
-        fontSize = 20.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(vertical = 40.dp)
+        text = stringResource(id = R.string.result_summary),
+        style = MaterialTheme.typography.h6,
     )
 }
 
@@ -71,10 +78,35 @@ fun TextTotalOfQuestions(totalOfQuestions: Int) {
             id = R.string.result_total_of_questions,
             totalOfQuestions
         ),
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold
+        style = MaterialTheme.typography.body1,
     )
 }
+
+@Composable
+fun RowCorrect(totalCorrect: Int, correctQuestions: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = MaterialTheme.colors.secondaryVariant,
+        shape = MaterialTheme.shapes.large
+    ) {
+        Row() {
+            Text(
+                text = stringResource(
+                    id = R.string.result_correct_answers,
+                    totalCorrect,
+                    correctQuestions
+                ),
+                style = MaterialTheme.typography.body2,
+                color = MaterialTheme.colors.surface
+            )
+        }
+        Row() {
+            Text(text = "😊")
+        }
+//        Icon(imageVector = Icons.Default.Ha, contentDescription = null)
+    }
+}
+
 
 @Composable
 fun TextCorrectAnswers(totalCorrect: Int, correctQuestions: String) {
@@ -84,7 +116,7 @@ fun TextCorrectAnswers(totalCorrect: Int, correctQuestions: String) {
             totalCorrect,
             correctQuestions
         ),
-        fontSize = 16.sp
+        style = MaterialTheme.typography.body2,
     )
 }
 
@@ -115,6 +147,6 @@ fun TextNotAnswered(totalNotAnswered: Int, notAnsweredQuestions: String) {
 @Composable
 fun ButtonHome(onHome: () -> Unit) {
     Button(onClick = onHome) {
-        Text(text = stringResource(id = R.string.result_home).uppercase())
+        Text(text = stringResource(id = R.string.result_home))
     }
 }

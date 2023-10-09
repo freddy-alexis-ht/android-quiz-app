@@ -46,6 +46,7 @@ class QuestionVM @Inject constructor(
 
     fun onEvent(event: QuestionEvent) {
         when (event) {
+            is QuestionEvent.OnPlayPause -> timer = timer.copy(playPause = event.playPause)
             is QuestionEvent.OnRbChange -> onRbChange(event.optionSelected, event.index)
             is QuestionEvent.OnPrevious -> onPrevious(event.index)
             is QuestionEvent.OnNext -> onNext(event.index)
@@ -172,5 +173,9 @@ class QuestionVM @Inject constructor(
             userOptions = userOptions,
             optionSelected = ""
         )
+    }
+
+    fun increaseTimer(ticks: Int) {
+        timer = timer.copy(ticks = ticks)
     }
 }

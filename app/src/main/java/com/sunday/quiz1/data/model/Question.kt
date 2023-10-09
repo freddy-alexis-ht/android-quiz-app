@@ -15,7 +15,7 @@ class Question(
                 Question(4, "Domingo es de color: ___", listOf("blanco", "negro", "marrón"), "negro" ),
                 Question(5, "Espacio = Velocidad x ___?", listOf("masa", "distancia", "tiempo"), "tiempo" ),
                 Question(6, "Azul y Amarillo hacen: ___?", listOf("verde", "celeste", "rojo"), "verde" ),
-                Question(7, "Factorial de 4 (4!) es: ___?", listOf("6", "24", "36"), "24" ),
+                Question(7, "Factorial de 4 es: 4! = ___?", listOf("6", "24", "36"), "24" ),
             )
         }
         fun getOne(index: Int): Question {

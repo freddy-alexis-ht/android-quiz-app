@@ -14,8 +14,9 @@ import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.R
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.common.MyButton
-import com.sunday.quiz1.ui.common.MyVerticalSpacer16Dp
+import com.sunday.quiz1.ui.common.MyVerticalSpacer
 import com.sunday.quiz1.ui.theme.Quiz1Theme
+import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
 fun HomeScreen(
@@ -35,7 +36,7 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(30.dp),
+            .padding(MaterialTheme.spacing.mediumPlus),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,18 +50,18 @@ fun HomeScreen(
                 onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
                 text = stringResource(id = R.string.home_continue)
             )
-            MyVerticalSpacer16Dp()
+            MyVerticalSpacer(MaterialTheme.spacing.medium)
             MyButton(
                 onclick = { homeVM.onEvent(HomeEvent.OnStart) },
                 text = stringResource(id = R.string.home_restart),
-                colors = Color.Gray
+                colors = MaterialTheme.colors.secondaryVariant
             )
         }
-        MyVerticalSpacer16Dp()
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
         MyButton(
             onclick = { homeVM.onEvent(HomeEvent.OnExit) },
             text = stringResource(id = R.string.home_exit),
-            colors = MaterialTheme.colors.surface,
+            colors = MaterialTheme.colors.secondary,
         )
     }
 }

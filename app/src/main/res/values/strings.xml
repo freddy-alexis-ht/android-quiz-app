@@ -8,11 +8,12 @@
     <string name="home_exit">Salir</string>
 
     <!-- Question -->
-    <string name="question_number">%1$d / %2$d</string>
+    <string name="question_number">%1$d/%2$d</string>
     <string name="question_previous">Atrás</string>
     <string name="question_next">Siguiente</string>
     <string name="question_finish">Finalizar</string>
     <string name="question_home">Home</string>
+    <string name="question_home_pause_clock">\n(El reloj se pausará)</string>
 
     <!-- Result -->
     <string name="result_summary">Resumen</string>

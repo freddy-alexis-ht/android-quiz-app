@@ -7,9 +7,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.R
 import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.ui.common.*
+import com.sunday.quiz1.ui.theme.spacing
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
@@ -50,40 +48,34 @@ fun QuestionScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = Modifier.padding(20.dp)
+        modifier = Modifier.padding(MaterialTheme.spacing.mediumPlus)
     ) {
-        RowTimer()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            TextNumberOfQuestion(index, numberOfQuestions)
-            MyHorizontalSpacer12Dp()
-            MyProgressIndicator(index, numberOfQuestions, Modifier.weight(1.0f, true))
-            MyHorizontalSpacer12Dp()
-            IconButtonPrevious(questionVM, index)
-        }
+        RowTimer(questionVM)
+        MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
 
-        MyVerticalSpacer16Dp()
-        QuestionSwitch(questionVM, index, numberOfQuestions)
+        RowProgression(questionVM, index, numberOfQuestions)
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
 
-        MyVerticalSpacer16Dp()
-        TextQuestion(index, questions)
-        MyVerticalSpacer16Dp()
-        RadioButtonGroup(questionVM, index, questions)
-        MyVerticalSpacer16Dp()
-        ButtonGroup(questionVM, index)
+        RowQuestionSwitch(questionVM, index, numberOfQuestions)
+        MyVerticalSpacer(MaterialTheme.spacing.large)
+
+        RowQuestion(index, questions)
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+        RadioButtonOptions(questionVM, index, questions)
+        MyVerticalSpacer(MaterialTheme.spacing.large)
+
+        ButtonNav(questionVM, index)
     }
 }
 
 @Composable
-fun RowTimer() {
-    var ticks by remember { mutableStateOf(0) }
+fun RowTimer(questionVM: QuestionVM) {
+    var ticks = questionVM.timer.ticks
     LaunchedEffect(Unit) {
-        while(true) {
+        while (true) {
             delay(1.seconds)
-            ticks++
+            questionVM.increaseTimer(ticks++)
         }
     }
     var seconds = "%02d".format(ticks % 60)
@@ -94,15 +86,36 @@ fun RowTimer() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Text(text = "${hours}:$minutes:$seconds")
+        Text(
+            text = "${hours}:$minutes:$seconds",
+            style = MaterialTheme.typography.body2
+        )
 
     }
 }
 
 @Composable
+fun RowProgression(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        TextNumberOfQuestion(index, numberOfQuestions)
+        MyHorizontalSpacer(MaterialTheme.spacing.medium)
+        MyProgressIndicator(index, numberOfQuestions, Modifier.weight(1.0f, true))
+        MyHorizontalSpacer(MaterialTheme.spacing.medium)
+        IconButtonPrevious(questionVM, index)
+    }
+}
+
+@Composable
 fun TextNumberOfQuestion(index: Int, numberOfQuestions: Int) {
-    Text(text = stringResource(id = R.string.question_number,
-        index + 1, numberOfQuestions))
+    Text(
+        text = stringResource(id = R.string.question_number,
+        index + 1, numberOfQuestions),
+        style = MaterialTheme.typography.body2
+    )
 }
 
 @Composable
@@ -115,7 +128,8 @@ fun MyProgressIndicator(index: Int, numberOfQuestions: Int, modifier: Modifier =
 @Composable
 fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
     Card(
-        shape = RoundedCornerShape(24.dp)
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(width = 0.dp, color = MaterialTheme.colors.primary),
     ) {
         IconButton(
             onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) },
@@ -130,10 +144,10 @@ fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
     }
 }
 
-@Composable
-fun QuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
 
-    var border: Int
+@Composable
+fun RowQuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
+
     var answers = questionVM.state.userAnswers
     var color: Color
     Row(modifier = Modifier
@@ -142,37 +156,40 @@ fun QuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
         horizontalArrangement = Arrangement.Center
     ) {
         for (i in 1..numberOfQuestions) {
+            color =
+                if (i - 1 == index) MaterialTheme.colors.primary
+                else if (answers[i - 1] == null) MaterialTheme.colors.secondaryVariant
+                else MaterialTheme.colors.primaryVariant
 
-            border = if (i - 1 == index) 2 else 0
-            color = if(answers[i-1] == null) Color.LightGray else Color.Blue
-
-            MyHorizontalSpacer8Dp()
+            MyHorizontalSpacer(MaterialTheme.spacing.small)
             Card(
-                shape = RoundedCornerShape(24.dp),
-                border = BorderStroke(width = border.dp, color = Color.Red)
+                shape = MaterialTheme.shapes.large,
+                border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.primary),
+                backgroundColor = color
             ) {
                 IconButton(
                     onClick = { questionVM.onEvent(QuestionEvent.OnJumpTo(i - 1)) },
-                    modifier = Modifier.background(color)
                 ) {
-                    Text(text = i.toString())
+                    Text(
+                        text = i.toString(),
+                        style = MaterialTheme.typography.body2
+                    )
                 }
             }
         }
-        MyHorizontalSpacer8Dp()
+        MyHorizontalSpacer(MaterialTheme.spacing.small)
     }
 }
 
 @Composable
-fun TextQuestion(index: Int, questions: List<Question>) {
+fun RowQuestion(index: Int, questions: List<Question>) {
     Card(
-        backgroundColor = Color.LightGray,
-        shape = RoundedCornerShape(20.dp)
+        backgroundColor = MaterialTheme.colors.primaryVariant,
+        shape = MaterialTheme.shapes.large
     ) {
         Text(
-            text = questions[index].question.uppercase(),
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
+            text = questions[index].question,
+            style = MaterialTheme.typography.body1,
             modifier = Modifier
                 .padding(20.dp)
                 .fillMaxWidth()
@@ -181,46 +198,56 @@ fun TextQuestion(index: Int, questions: List<Question>) {
 }
 
 @Composable
-fun RadioButtonGroup(questionVM: QuestionVM, index: Int, questions: List<Question>) {
+fun RadioButtonOptions(questionVM: QuestionVM, index: Int, questions: List<Question>) {
 
     val options: List<String> = questions[index].options
 
     options.forEach {
-
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { questionVM.onEvent(QuestionEvent.OnRbChange(it, index)) }
+        var selected = questionVM.userOptions[index] == it
+        var color =
+            if (selected) MaterialTheme.colors.primaryVariant
+            else MaterialTheme.colors.secondaryVariant
+        Card(
+            backgroundColor = color,
+            shape = MaterialTheme.shapes.medium
         ) {
-            RadioButton(
-                selected = questionVM.userOptions[index] == it,
-                onClick = { questionVM.onEvent(QuestionEvent.OnRbChange(it, index)) }
-            )
-            Text(text = it)
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { questionVM.onEvent(QuestionEvent.OnRbChange(it, index)) }
+            ) {
+                RadioButton(
+                    selected = selected,
+                    onClick = { questionVM.onEvent(QuestionEvent.OnRbChange(it, index)) }
+                )
+                Text(text = it, style = MaterialTheme.typography.body2)
+            }
         }
+        if (it != options.last()) MyVerticalSpacer(MaterialTheme.spacing.small)
     }
 }
 
 @Composable
-fun ButtonGroup(questionVM: QuestionVM, index: Int) {
+fun ButtonNav(questionVM: QuestionVM, index: Int) {
     if (index != Question.getList().size - 1) {
         MyButton(
             onclick = { questionVM.onEvent(QuestionEvent.OnNext(index)) },
-            text = stringResource(id = R.string.question_next).uppercase()
+            text = stringResource(id = R.string.question_next)
         )
     } else {
         MyButton(
             onclick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) },
-            text = stringResource(id = R.string.question_finish).uppercase()
+            text = stringResource(id = R.string.question_finish)
         )
     }
-    MyVerticalSpacer16Dp()
+    MyVerticalSpacer(MaterialTheme.spacing.medium)
     MyButton(
         onclick = { questionVM.onEvent((QuestionEvent.OnHome)) },
-        text = stringResource(id = R.string.question_home).uppercase(),
-        colors = MaterialTheme.colors.surface
+        text = stringResource(id = R.string.question_home)
+                + stringResource(id = R.string.question_home_pause_clock),
+        colors = MaterialTheme.colors.secondary
     )
 }
 
