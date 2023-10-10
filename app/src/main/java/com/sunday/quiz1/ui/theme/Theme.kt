@@ -16,6 +16,7 @@ private val LightColorPalette = lightColors(
     secondaryVariant = Grey400,
     surface = Green900,
     background = Grey300,
+    error = Red500
 )
 
 private val DarkColorPalette = darkColors(
@@ -25,6 +26,7 @@ private val DarkColorPalette = darkColors(
     secondaryVariant = Grey500,
     surface = Green900,
     background = Grey900,
+    error = Red400
 )
 
 val MaterialTheme.spacing: Spacing

@@ -1,8 +1,10 @@
 package com.sunday.quiz1.ui.question
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -41,6 +43,9 @@ class QuestionVM @Inject constructor(
     var resultState by mutableStateOf(ResultState())
         private set
 
+    fun myUserOptions(): SnapshotStateList<String> {
+        return this.userOptions
+    }
     private val _appEvent = Channel<AppEvent>()
     val appEvent = _appEvent.receiveAsFlow()
 
@@ -79,6 +84,9 @@ class QuestionVM @Inject constructor(
 
     private fun onFinish(index: Int) {
         validateUserOption(index)
+        resultState = resultState.copy(
+            userOptions = userOptions.toMutableList(),
+        )
         generateQuizResults()
         for (i in questions.indices) {
             userOptions[i] = ""
@@ -107,12 +115,6 @@ class QuestionVM @Inject constructor(
         var userAnswer = if(userOptions[index] != "") userOptions[index]
         else state.optionSelected
 
-//        viewModelScope.launch {
-//            val questionUseCase: Question? = getQuestionUseCase(index).data
-//            var b: Boolean? = if (i != -1) questionUseCase!!.results[i]
-//            else null
-//            state.userAnswers[index] = b
-//        }
         var userBoolean = if(userAnswer == "") null
         else userAnswer == questions[index].result
 
@@ -131,7 +133,8 @@ class QuestionVM @Inject constructor(
             totalNotAnswered = state.userAnswers.count { it == null },
             correctQuestions = this.getCorrectQuestions(),
             incorrectQuestions = this.getIncorrectQuestions(),
-            notAnsweredQuestions = this.getNotAnsweredQuestions()
+            notAnsweredQuestions = this.getNotAnsweredQuestions(),
+            userAnswers = state.userAnswers
         )
     }
 
