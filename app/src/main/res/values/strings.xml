@@ -16,11 +16,15 @@
     <string name="question_home_pause_clock">\n(El reloj se pausará)</string>
 
     <!-- Result -->
-    <string name="result_summary">Resumen</string>
-    <string name="result_total_of_questions">Total de preguntas: %1$d</string>
-    <string name="result_correct_answers">%1$d preguntas correctas: %2$s</string>
-    <string name="result_incorrect_answers">%1$d preguntas incorrectas: %2$s</string>
-    <string name="result_not_answered">%1$d preguntas no contestadas: %2$s</string>
+    <string name="result_summary">Resultados</string>
+    <string name="result_total_of_questions">Total de preguntas: %1$d 📝</string>
+    <string name="result_correct_answers">Respuestas correctas:</string>
+    <string name="result_correct_emoji">😎</string>
+    <string name="result_incorrect_answers">Respuestas incorrectas:</string>
+    <string name="result_incorrect_emoji">😨</string>
+    <string name="result_not_answered">Preguntas no contestadas:</string>
+    <string name="result_not_answered_emoji">🥴</string>
     <string name="result_home">Home</string>
+    <string name="result_detail">Detalle</string>
 
 </resources>

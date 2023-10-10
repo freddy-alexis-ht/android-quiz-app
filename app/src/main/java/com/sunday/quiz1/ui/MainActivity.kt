@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
                             MaterialTheme.colors.surface,
                             MaterialTheme.colors.background,
                         ),
-                        startY = -150f
+                        startY = 800f
                     )),
                 ) {
                     Navigation(homeVM = homeVM, questionVM = questionVM, resultVM = resultVM)
