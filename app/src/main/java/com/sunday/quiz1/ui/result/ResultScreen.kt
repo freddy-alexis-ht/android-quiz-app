@@ -1,6 +1,5 @@
 package com.sunday.quiz1.ui.result
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -108,7 +107,7 @@ fun CardResults(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(130.dp),
         backgroundColor = MaterialTheme.colors.secondaryVariant,
         shape = MaterialTheme.shapes.medium,
     ) {
@@ -117,6 +116,10 @@ fun CardResults(
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
                     TextTotalOfQuestions(totalOfQuestions)
+                }
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center) {
+                    Text(text = "Tiempo: ${ResultState.timer}")
                 }
                 RowResult(
                     text = stringResource(id = R.string.result_correct_answers),

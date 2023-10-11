@@ -1,10 +1,9 @@
 package com.sunday.quiz1.ui.question
 
-import com.sunday.quiz1.data.model.Question
-
 data class QuestionState(
+    var size: Int = 0,
     var index: Int = 0,
     var optionSelected: String = "",
-    var userOptions: MutableList<String> = MutableList(Question.getSize()) { "" },
-    var userAnswers: MutableList<Boolean?> = MutableList(Question.getSize()) { null },
+    var userOptions: MutableList<String> = MutableList(size) { "" },
+    var userAnswers: MutableList<Boolean?> = MutableList(size) { null },
 )

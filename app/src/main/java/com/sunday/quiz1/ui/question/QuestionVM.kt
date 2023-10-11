@@ -32,7 +32,7 @@ class QuestionVM @Inject constructor(
 
     var timer by mutableStateOf(Timer())
         private set
-    var state by mutableStateOf(QuestionState())
+    var state by mutableStateOf(QuestionState(size = questions.size))
         private set
     var userOptions = state.userOptions.toMutableStateList()
         private set
@@ -42,12 +42,11 @@ class QuestionVM @Inject constructor(
 
     fun onEvent(event: QuestionEvent) {
         when (event) {
-            is QuestionEvent.OnPlayPause -> timer = timer.copy(playPause = event.playPause)
             is QuestionEvent.OnRbChange -> onRbChange(event.optionSelected, event.index)
             is QuestionEvent.OnPrevious -> onPrevious(event.index)
             is QuestionEvent.OnNext -> onNext(event.index)
             is QuestionEvent.OnFinish -> onFinish(event.index)
-            is QuestionEvent.OnJumpTo -> state = state.copy(index = event.index)
+            is QuestionEvent.OnJumpTo -> onJumpTo(event.indexOrigin, event.indexDestiny)
             QuestionEvent.OnHome -> onHome()
         }
     }
@@ -85,6 +84,14 @@ class QuestionVM @Inject constructor(
         )
     }
 
+    private fun onJumpTo(indexOrigin: Int, indexDestiny: Int) {
+        validateUserOption(indexOrigin)
+        state = state.copy(
+            optionSelected = "",
+            index = indexDestiny
+        )
+    }
+
     private fun onHome() {
         state = state.copy(index = 0)
         sendAppEvent(
@@ -114,6 +121,7 @@ class QuestionVM @Inject constructor(
     }
 
     private fun sendResultsToResultScreen() {
+        ResultState.timer = formatTimer(timer.ticks)
         ResultState.size = questions.size
         ResultState.userOptions = userOptions.toMutableList()
         ResultState.userAnswers = state.userAnswers
@@ -122,14 +130,27 @@ class QuestionVM @Inject constructor(
     fun clearUserOptions() {
         for (i in questions.indices) {
             userOptions[i] = ""
+            state.userAnswers[i] = null
         }
         state = state.copy(
             userOptions = userOptions,
-            optionSelected = ""
+            userAnswers = state.userAnswers,
+            optionSelected = "",
+        )
+        timer = timer.copy(
+            ticks = 0,
+            continueRestart = !timer.continueRestart
         )
     }
 
+    /* Timer functions*/
     fun increaseTimer(ticks: Int) {
         timer = timer.copy(ticks = ticks)
+    }
+    fun formatTimer(ticks: Int) : String {
+        val seconds = "%02d".format(ticks % 60)
+        val minutes = "%02d".format((ticks / 60) % 60)
+        val hours = "%02d".format((ticks / 3600) % 60)
+        return if(hours=="00") "$minutes:$seconds" else "${hours}:$minutes:$seconds"
     }
 }

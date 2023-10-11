@@ -7,6 +7,7 @@ data class ResultState(
     var totalNotAnswered: Int = userAnswers.count { it == null },
 ) {
     companion object {
+        var timer: String = ""
         var size: Int = 0
         var userOptions: MutableList<String> = MutableList(size) { "" }
         var userAnswers: MutableList<Boolean?> = MutableList(size) { null }

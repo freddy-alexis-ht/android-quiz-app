@@ -14,7 +14,4 @@ class RepositoryImpl @Inject constructor(
         return provider.getQuestions()
     }
 
-    override suspend fun getQuestion(index: Int): Answer<Question> {
-        return provider.getQuestion(index)
-    }
 }

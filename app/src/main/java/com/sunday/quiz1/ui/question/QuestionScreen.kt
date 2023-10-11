@@ -2,7 +2,6 @@ package com.sunday.quiz1.ui.question
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -11,9 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.sunday.quiz1.R
 import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.ui.common.*
@@ -72,25 +69,23 @@ fun QuestionScreen(
 @Composable
 fun RowTimer(questionVM: QuestionVM) {
     var ticks = questionVM.timer.ticks
-    LaunchedEffect(Unit) {
+    var continueRestart = questionVM.timer.continueRestart
+    LaunchedEffect(continueRestart) {
         while (true) {
             delay(1.seconds)
             questionVM.increaseTimer(ticks++)
         }
     }
-    var seconds = "%02d".format(ticks % 60)
-    var minutes = "%02d".format((ticks / 60) % 60)
-    var hours = "%02d".format((ticks / 3600) % 60)
+    val formatTimer = questionVM.formatTimer(ticks)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "${hours}:$minutes:$seconds",
+            text = formatTimer,
             style = MaterialTheme.typography.body2
         )
-
     }
 }
 
@@ -168,7 +163,7 @@ fun RowQuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int
                 backgroundColor = color
             ) {
                 IconButton(
-                    onClick = { questionVM.onEvent(QuestionEvent.OnJumpTo(i - 1)) },
+                    onClick = { questionVM.onEvent(QuestionEvent.OnJumpTo(index,i - 1)) },
                 ) {
                     Text(
                         text = i.toString(),

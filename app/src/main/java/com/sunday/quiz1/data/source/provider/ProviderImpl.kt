@@ -9,9 +9,4 @@ class ProviderImpl @Inject constructor(): IProvider {
         val questions: List<Question> = Question.getList()
         return Answer.Success(data = questions)
     }
-
-    override suspend fun getQuestion(index: Int): Answer<Question> {
-        val question: Question = Question.getOne(index)
-        return Answer.Success(data = question)
-    }
 }
