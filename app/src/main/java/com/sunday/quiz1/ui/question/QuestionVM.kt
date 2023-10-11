@@ -1,17 +1,14 @@
 package com.sunday.quiz1.ui.question
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.data.model.Timer
 import com.sunday.quiz1.domain.use_case.GetAllQuestionsUseCase
-import com.sunday.quiz1.domain.use_case.GetOneQuestionUseCase
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.result.ResultState
 import com.sunday.quiz1.ui.common.Routes
@@ -24,7 +21,6 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestionVM @Inject constructor(
     private val getAllQuestionsUseCase: GetAllQuestionsUseCase,
-    private val getOneQuestionUseCase: GetOneQuestionUseCase,
 ) : ViewModel() {
 
     lateinit var questions: List<Question>
@@ -40,12 +36,7 @@ class QuestionVM @Inject constructor(
         private set
     var userOptions = state.userOptions.toMutableStateList()
         private set
-    var resultState by mutableStateOf(ResultState())
-        private set
 
-    fun myUserOptions(): SnapshotStateList<String> {
-        return this.userOptions
-    }
     private val _appEvent = Channel<AppEvent>()
     val appEvent = _appEvent.receiveAsFlow()
 
@@ -84,10 +75,7 @@ class QuestionVM @Inject constructor(
 
     private fun onFinish(index: Int) {
         validateUserOption(index)
-        resultState = resultState.copy(
-            userOptions = userOptions.toMutableList(),
-        )
-        generateQuizResults()
+        sendResultsToResultScreen()
         for (i in questions.indices) {
             userOptions[i] = ""
         }
@@ -125,47 +113,10 @@ class QuestionVM @Inject constructor(
         }
     }
 
-    private fun generateQuizResults() {
-        resultState = resultState.copy(
-            totalQuestions = questions.size,
-            totalCorrect = state.userAnswers.count { it == true },
-            totalIncorrect = state.userAnswers.count { it == false },
-            totalNotAnswered = state.userAnswers.count { it == null },
-            correctQuestions = this.getCorrectQuestions(),
-            incorrectQuestions = this.getIncorrectQuestions(),
-            notAnsweredQuestions = this.getNotAnsweredQuestions(),
-            userAnswers = state.userAnswers
-        )
-    }
-
-    private fun getCorrectQuestions(): String {
-        var n: Int = 1
-        var correct: String = "*"
-        state.userAnswers.forEach {
-            if (it == true) correct += " $n"
-            n++
-        }
-        return correct
-    }
-
-    private fun getIncorrectQuestions(): String {
-        var n: Int = 1
-        var incorrect: String = "*"
-        state.userAnswers.forEach {
-            if (it == false) incorrect += " $n"
-            n++
-        }
-        return incorrect
-    }
-
-    private fun getNotAnsweredQuestions(): String {
-        var n: Int = 1
-        var notAnswered: String = "*"
-        state.userAnswers.forEach {
-            if (it == null) notAnswered += " $n"
-            n++
-        }
-        return notAnswered
+    private fun sendResultsToResultScreen() {
+        ResultState.size = questions.size
+        ResultState.userOptions = userOptions.toMutableList()
+        ResultState.userAnswers = state.userAnswers
     }
 
     fun clearUserOptions() {

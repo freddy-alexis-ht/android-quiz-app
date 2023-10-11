@@ -1,15 +1,14 @@
 package com.sunday.quiz1.ui.result
 
-import com.sunday.quiz1.data.model.Question
-
 data class ResultState(
-    var totalQuestions: Int = 0,
-    var totalCorrect: Int = 0,
-    var totalIncorrect: Int = 0,
-    var totalNotAnswered: Int = 0,
-    var correctQuestions: String = "",
-    var incorrectQuestions: String = "",
-    var notAnsweredQuestions: String = "",
-    var userOptions: MutableList<String> = MutableList(Question.getSize()) { "" },
-    var userAnswers: MutableList<Boolean?> = MutableList(Question.getSize()) { null },
-)
+    var totalQuestions: Int = size,
+    var totalCorrect: Int = userAnswers.count { it == true },
+    var totalIncorrect: Int = userAnswers.count { it == false },
+    var totalNotAnswered: Int = userAnswers.count { it == null },
+) {
+    companion object {
+        var size: Int = 0
+        var userOptions: MutableList<String> = MutableList(size) { "" }
+        var userAnswers: MutableList<Boolean?> = MutableList(size) { null }
+    }
+}

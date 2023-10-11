@@ -28,9 +28,9 @@ fun ResultScreen(
     resultVM: ResultVM,
     questionVM: QuestionVM,
 ) {
-    val result = questionVM.resultState
-    val userAnswers: MutableList<Boolean?> = questionVM.resultState.userAnswers
-    val userOptions: MutableList<String> = questionVM.resultState.userOptions
+    val result = ResultState()
+    val userAnswers: MutableList<Boolean?> = ResultState.userAnswers
+    val userOptions: MutableList<String> = ResultState.userOptions
     val questions = questionVM.questions
 
     LaunchedEffect(key1 = true) {

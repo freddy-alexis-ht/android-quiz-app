@@ -1,5 +1,8 @@
 package com.sunday.quiz1.ui.result
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sunday.quiz1.ui.common.AppEvent
@@ -10,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class ResultVM : ViewModel() {
 
-//    var state by mutableStateOf(ResultState())
-//        private set
+    var resultState by mutableStateOf(ResultState())
+        private set
 
     private val _appEvent = Channel<AppEvent>()
     val appEvent = _appEvent.receiveAsFlow()
