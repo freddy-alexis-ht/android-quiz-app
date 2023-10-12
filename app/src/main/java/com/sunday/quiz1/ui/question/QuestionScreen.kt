@@ -2,6 +2,7 @@ package com.sunday.quiz1.ui.question
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -124,11 +125,13 @@ fun MyProgressIndicator(index: Int, numberOfQuestions: Int, modifier: Modifier =
 fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
     Card(
         shape = MaterialTheme.shapes.large,
-        border = BorderStroke(width = 0.dp, color = MaterialTheme.colors.primary),
+        border = BorderStroke(width = MaterialTheme.spacing.default, color = MaterialTheme.colors.primary),
     ) {
         IconButton(
             onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) },
-            modifier = Modifier.background(MaterialTheme.colors.secondary),
+            modifier = Modifier.background(
+                if(index != 0) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+            ),
             enabled = index != 0,
         ) {
             Icon(
@@ -159,7 +162,7 @@ fun RowQuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int
             MyHorizontalSpacer(MaterialTheme.spacing.small)
             Card(
                 shape = MaterialTheme.shapes.large,
-                border = BorderStroke(width = 1.dp, color = MaterialTheme.colors.primary),
+                border = BorderStroke(width = MaterialTheme.spacing.simple, color = MaterialTheme.colors.primary),
                 backgroundColor = color
             ) {
                 IconButton(
@@ -186,7 +189,7 @@ fun RowQuestion(index: Int, questions: List<Question>) {
             text = questions[index].question,
             style = MaterialTheme.typography.body1,
             modifier = Modifier
-                .padding(20.dp)
+                .padding(MaterialTheme.spacing.medium)
                 .fillMaxWidth()
         )
     }

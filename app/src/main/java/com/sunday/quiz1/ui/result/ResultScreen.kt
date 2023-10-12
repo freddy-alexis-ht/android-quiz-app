@@ -1,11 +1,9 @@
 package com.sunday.quiz1.ui.result
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -31,13 +29,12 @@ fun ResultScreen(
     resultVM: ResultVM,
     questionVM: QuestionVM,
 ) {
-    val result = ResultState()
+    val result = resultVM.resultState
+    val isDetailVisible = resultVM.resultState.isDetailVisible
+
     val userAnswers: MutableList<Boolean?> = ResultState.userAnswers
     val userOptions: MutableList<String> = ResultState.userOptions
     val questions = questionVM.questions
-
-//    resultVM.updateResultState(result)
-    var isDetailVisible = resultVM.resultState.isDetailVisible
 
     LaunchedEffect(key1 = true) {
         resultVM.appEvent.collect { event ->
@@ -48,7 +45,7 @@ fun ResultScreen(
         }
     }
     LaunchedEffect(key1 = true) {
-        resultVM.updateResultState(result)
+        resultVM.updateResultState(ResultState())
     }
 
     Column(
@@ -58,7 +55,10 @@ fun ResultScreen(
         verticalArrangement = Arrangement.Top,
     ) {
 
-        RowResults(text = stringResource(id = R.string.result_summary), resultVM)
+        RowResults(
+            text = stringResource(id = R.string.result_summary),
+            onHome = { resultVM.onEvent(ResultEvent.OnHome) }
+        )
         MyVerticalSpacer(MaterialTheme.spacing.medium)
 
         CardResults(result.totalQuestions,
@@ -67,7 +67,7 @@ fun ResultScreen(
             result.totalNotAnswered)
         MyVerticalSpacer(MaterialTheme.spacing.mediumPlus)
 
-        Divider(color = MaterialTheme.colors.secondaryVariant, thickness = 1.dp)
+        Divider(color = MaterialTheme.colors.secondaryVariant, thickness = MaterialTheme.spacing.simple)
         MyVerticalSpacer(MaterialTheme.spacing.small)
 
         RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
@@ -75,12 +75,15 @@ fun ResultScreen(
 
         LazyColumn {
             itemsIndexed(questions) { index, question ->
-                var isCardVisible =
+                val isCardVisible =
                     if (userAnswers[index] == true) resultVM.resultState.isCorrectVisible
                     else if (userAnswers[index] == false) resultVM.resultState.isIncorrectVisible
                     else resultVM.resultState.isNotAnsweredVisible
 
-                if(isCardVisible) CardDetails(index, question, userAnswers[index], userOptions[index])
+                if (isCardVisible) CardDetails(index,
+                    question,
+                    userAnswers[index],
+                    userOptions[index])
                 MyVerticalSpacer(MaterialTheme.spacing.small)
             }
         }
@@ -88,14 +91,14 @@ fun ResultScreen(
 }
 
 @Composable
-fun RowResults(text: String, resultVM: ResultVM) {
+fun RowResults(text: String, onHome: () -> Unit) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Row(modifier = Modifier.weight(1f)) {
             TextTitle(text)
         }
         Row {
             MyButton(
-                onclick = { resultVM.onEvent(ResultEvent.OnHome) },
+                onclick = { onHome() },
                 text = stringResource(id = R.string.result_home),
                 modifier = Modifier.fillMaxWidth(0.2f)
             )
@@ -113,7 +116,7 @@ fun CardResults(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(130.dp),
+            .height(MaterialTheme.spacing.cardResults),
         backgroundColor = MaterialTheme.colors.secondaryVariant,
         shape = MaterialTheme.shapes.medium,
     ) {
@@ -163,43 +166,53 @@ fun RowDetails(text: String, isDetailVisible: Boolean, resultVM: ResultVM) {
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             ButtonFilter(true,
-                {resultVM.onEvent(ResultEvent.OnClickFilter(true))},
+                { resultVM.onEvent(ResultEvent.OnClickFilter(true)) },
                 isDetailVisible,
                 resultVM.resultState.isCorrectVisible,
                 stringResource(R.string.result_correct_emoji))
             ButtonFilter(false,
-            {resultVM.onEvent(ResultEvent.OnClickFilter(false))},
+                { resultVM.onEvent(ResultEvent.OnClickFilter(false)) },
                 isDetailVisible,
-                    resultVM.resultState.isIncorrectVisible,
-                    stringResource(R.string.result_incorrect_emoji))
+                resultVM.resultState.isIncorrectVisible,
+                stringResource(R.string.result_incorrect_emoji))
             ButtonFilter(null,
-            {resultVM.onEvent(ResultEvent.OnClickFilter(null))},
+                { resultVM.onEvent(ResultEvent.OnClickFilter(null)) },
                 isDetailVisible,
-                    resultVM.resultState.isNotAnsweredVisible,
-                    stringResource(R.string.result_not_answered_emoji))
+                resultVM.resultState.isNotAnsweredVisible,
+                stringResource(R.string.result_not_answered_emoji))
         }
     }
 }
 
 @Composable
-fun ButtonFilter(answerType: Boolean?, onClick: (Boolean?) -> Unit, isVisible: Boolean, whenChange: Boolean, emoji: String) {
-
+fun ButtonFilter(
+    answerType: Boolean?,
+    onClick: (Boolean?) -> Unit,
+    isVisible: Boolean,
+    isFiltered: Boolean,
+    emoji: String,
+) {
     Button(
         onClick = { onClick(answerType) },
-        modifier = Modifier.size(36.dp),
-        contentPadding = PaddingValues(0.dp),
+        modifier = Modifier.size(MaterialTheme.spacing.large),
+        contentPadding = PaddingValues(MaterialTheme.spacing.default),
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
-        elevation = ButtonDefaults.elevation(0.dp),
+        elevation = ButtonDefaults.elevation(MaterialTheme.spacing.default),
         enabled = isVisible
     ) {
-        if(!isVisible) Text(text = emoji)
+        if (!isVisible) Text(text = emoji)
         else
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-        ) {
-            Text(text = emoji)
-            Box(modifier = Modifier.fillMaxSize()
-                .background(if(!whenChange) MaterialTheme.colors.secondaryVariant.copy(alpha = 0.5f) else { Color.Transparent }))
-        }
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+            ) {
+                Text(text = emoji)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        if (!isFiltered) MaterialTheme.colors.secondaryVariant.copy(alpha = 0.5f)
+                        else Color.Transparent
+                    )
+                )
+            }
     }
 }
 
@@ -213,7 +226,7 @@ fun CardDetails(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp),
+            .height(MaterialTheme.spacing.cardDetails),
         backgroundColor = MaterialTheme.colors.secondaryVariant,
         shape = MaterialTheme.shapes.medium
     ) {
@@ -237,20 +250,19 @@ fun TextTitle(text: String) {
     )
 }
 
-
 @Composable
 fun DetailQuestion(index: Int, question: String, userAnswer: Boolean?) {
     Row {
         Text(text = stringResource(id = R.string.result_question_number, index + 1))
         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
         Text(text = question, modifier = Modifier.weight(1f))
-        Text(
-            text = stringResource(id =
-            if (userAnswer == true) R.string.result_correct_emoji
-            else if (userAnswer == false) R.string.result_incorrect_emoji
-            else R.string.result_not_answered_emoji
-            )
-        )
+        Text(text = stringResource(id =
+            when (userAnswer) {
+                true -> R.string.result_correct_emoji
+                false -> R.string.result_incorrect_emoji
+                else -> R.string.result_not_answered_emoji
+            }
+        ))
     }
 }
 
@@ -270,9 +282,7 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                             tint = MaterialTheme.colors.surface
                         )
                         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                        Text(text = it,
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.body2)
+                        TextOption(it)
                     }
                 }
             } else if (it == userOption) {
@@ -287,9 +297,7 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                             tint = MaterialTheme.colors.error
                         )
                         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                        Text(text = it,
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.body2)
+                        TextOption(it)
                     }
                 }
             } else {
@@ -297,12 +305,15 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                     contentDescription = stringResource(id = R.string.result_not_answered)
                 )
                 MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                Text(text = it,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.body2)
+                TextOption(it)
             }
         }
     }
+}
+
+@Composable
+fun TextOption(option: String) {
+    Text(text = option, style = MaterialTheme.typography.body2)
 }
 
 @Composable

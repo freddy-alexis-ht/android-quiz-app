@@ -2,7 +2,7 @@ package com.sunday.quiz1.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Amber400 = Color(0xFFFFCA28)
+val Orange400 = Color(0xFFFFA726)
 val Indigo300 = Color(0xFF7986CB)
 val DeepPurple400 = Color(0xFF7E57C2)
 val Grey400 = Color(0xFFBDBDBD)

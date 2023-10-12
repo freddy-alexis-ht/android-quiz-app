@@ -10,7 +10,7 @@ import com.sunday.quiz1.ui.common.LocalSpacing
 import com.sunday.quiz1.ui.common.Spacing
 
 private val LightColorPalette = lightColors(
-    primary = Amber400,
+    primary = Orange400,
     primaryVariant = Indigo300,
     secondary = DeepPurple400,
     secondaryVariant = Grey400,

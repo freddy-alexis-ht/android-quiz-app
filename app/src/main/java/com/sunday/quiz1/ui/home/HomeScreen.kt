@@ -78,7 +78,7 @@ fun HomeScreen(
 fun Animation() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie))
     LottieAnimation(
-        modifier = Modifier.size(400.dp),
+        modifier = Modifier.size(MaterialTheme.spacing.lottieAnimation),
         composition = composition
     )
 }
