@@ -143,11 +143,10 @@ fun CardResults(
 
 @Composable
 fun RowDetails(text: String, isDetailVisible: Boolean, resultVM: ResultVM) {
-    Log.i("MyTag", "RowDetails: $isDetailVisible")
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             TextTitle(text)
-            TextButton(onClick = { resultVM.onEvent(ResultEvent.OnViewHide(isDetailVisible)) }) {
+            TextButton(onClick = { resultVM.onEvent(ResultEvent.OnViewHide) }) {
                 Text(
                     text = stringResource(
                         id = if (isDetailVisible) R.string.result_hide else R.string.result_view

@@ -22,16 +22,13 @@ class ResultVM : ViewModel() {
 
     fun onEvent(event: ResultEvent) {
         when (event) {
-            is ResultEvent.OnHome -> {
+            ResultEvent.OnHome -> {
                 sendAppEvent(
                     AppEvent.Navigate(Routes.QUIZ_HOME + "?mem=" + true)
                 )
             }
-            is ResultEvent.OnViewHide -> {
-                Log.i("MyTag", "ResultVM1: ${event.isDetailVisible}")
-                Log.i("MyTag", "ResultVM1: ${resultState.isDetailVisible}")
-                resultState = resultState.copy(isDetailVisible = !event.isDetailVisible)
-                Log.i("MyTag", "ResultVM2: ${resultState.isDetailVisible}")
+            ResultEvent.OnViewHide -> {
+                resultState = resultState.copy(isDetailVisible = !resultState.isDetailVisible)
             }
         }
     }
