@@ -1,6 +1,7 @@
 package com.sunday.quiz1.ui.result
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -74,7 +75,12 @@ fun ResultScreen(
 
         LazyColumn {
             itemsIndexed(questions) { index, question ->
-                CardDetails(index, question, userAnswers[index], userOptions[index])
+                var isCardVisible =
+                    if (userAnswers[index] == true) resultVM.resultState.isCorrectVisible
+                    else if (userAnswers[index] == false) resultVM.resultState.isIncorrectVisible
+                    else resultVM.resultState.isNotAnsweredVisible
+
+                if(isCardVisible) CardDetails(index, question, userAnswers[index], userOptions[index])
                 MyVerticalSpacer(MaterialTheme.spacing.small)
             }
         }
@@ -156,24 +162,44 @@ fun RowDetails(text: String, isDetailVisible: Boolean, resultVM: ResultVM) {
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ButtonFilter(isDetailVisible, stringResource(R.string.result_correct_emoji))
-            ButtonFilter(isDetailVisible, stringResource(R.string.result_incorrect_emoji))
-            ButtonFilter(isDetailVisible, stringResource(R.string.result_not_answered_emoji))
+            ButtonFilter(true,
+                {resultVM.onEvent(ResultEvent.OnClickFilter(true))},
+                isDetailVisible,
+                resultVM.resultState.isCorrectVisible,
+                stringResource(R.string.result_correct_emoji))
+            ButtonFilter(false,
+            {resultVM.onEvent(ResultEvent.OnClickFilter(false))},
+                isDetailVisible,
+                    resultVM.resultState.isIncorrectVisible,
+                    stringResource(R.string.result_incorrect_emoji))
+            ButtonFilter(null,
+            {resultVM.onEvent(ResultEvent.OnClickFilter(null))},
+                isDetailVisible,
+                    resultVM.resultState.isNotAnsweredVisible,
+                    stringResource(R.string.result_not_answered_emoji))
         }
     }
 }
 
 @Composable
-fun ButtonFilter(isDetailVisible: Boolean, emoji: String) {
+fun ButtonFilter(answerType: Boolean?, onClick: (Boolean?) -> Unit, isVisible: Boolean, whenChange: Boolean, emoji: String) {
+
     Button(
-        onClick = { /*TODO*/ },
+        onClick = { onClick(answerType) },
         modifier = Modifier.size(36.dp),
         contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
         elevation = ButtonDefaults.elevation(0.dp),
-        enabled = isDetailVisible
+        enabled = isVisible
     ) {
-        Text(text = emoji)
+        if(!isVisible) Text(text = emoji)
+        else
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+        ) {
+            Text(text = emoji)
+            Box(modifier = Modifier.fillMaxSize()
+                .background(if(!whenChange) MaterialTheme.colors.secondaryVariant.copy(alpha = 0.5f) else { Color.Transparent }))
+        }
     }
 }
 

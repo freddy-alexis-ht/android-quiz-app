@@ -2,9 +2,9 @@ package com.sunday.quiz1.ui.result
 
 data class ResultState(
     var isDetailVisible: Boolean = false,
-    var isCorrectVisible: Boolean = true,
-    var isIncorrectVisible: Boolean = true,
-    var isNotAnsweredVisible: Boolean = true,
+    var isCorrectVisible: Boolean = false,
+    var isIncorrectVisible: Boolean = false,
+    var isNotAnsweredVisible: Boolean = false,
     var totalQuestions: Int = size,
     var totalCorrect: Int = userAnswers.count { it == true },
     var totalIncorrect: Int = userAnswers.count { it == false },
