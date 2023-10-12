@@ -74,7 +74,7 @@ fun ResultScreen(
 
         LazyColumn {
             itemsIndexed(questions) { index, question ->
-                CardDetails(index, question, userAnswers, userOptions)
+                CardDetails(index, question, userAnswers[index], userOptions)
                 MyVerticalSpacer(MaterialTheme.spacing.small)
             }
         }
@@ -181,7 +181,7 @@ fun ButtonFilter(isDetailVisible: Boolean, emoji: String) {
 fun CardDetails(
     index: Int,
     question: Question,
-    userAnswers: MutableList<Boolean?>,
+    userAnswer: Boolean?,
     userOptions: MutableList<String>,
 ) {
     Card(
@@ -194,7 +194,7 @@ fun CardDetails(
         Box(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
             contentAlignment = Alignment.CenterStart) {
             Column() {
-                DetailQuestion(index, question.question, userAnswers)
+                DetailQuestion(index, question.question, userAnswer)
                 DetailOptions(question.options, question.result, userOptions[index])
             }
         }
@@ -213,15 +213,15 @@ fun TextTitle(text: String) {
 
 
 @Composable
-fun DetailQuestion(index: Int, question: String, userAnswers: MutableList<Boolean?>) {
+fun DetailQuestion(index: Int, question: String, userAnswer: Boolean?) {
     Row {
         Text(text = stringResource(id = R.string.result_question_number, index + 1))
         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
         Text(text = question, modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id =
-            if (userAnswers[index] == true) R.string.result_correct_emoji
-            else if (userAnswers[index] == false) R.string.result_incorrect_emoji
+            if (userAnswer == true) R.string.result_correct_emoji
+            else if (userAnswer == false) R.string.result_incorrect_emoji
             else R.string.result_not_answered_emoji
             )
         )
