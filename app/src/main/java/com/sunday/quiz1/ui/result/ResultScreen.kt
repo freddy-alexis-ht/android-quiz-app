@@ -1,8 +1,10 @@
 package com.sunday.quiz1.ui.result
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -10,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.ui.common.AppEvent
@@ -32,6 +35,9 @@ fun ResultScreen(
     val userOptions: MutableList<String> = ResultState.userOptions
     val questions = questionVM.questions
 
+//    resultVM.updateResultState(result)
+    var isDetailVisible = resultVM.resultState.isDetailVisible
+
     LaunchedEffect(key1 = true) {
         resultVM.appEvent.collect { event ->
             when (event) {
@@ -39,6 +45,9 @@ fun ResultScreen(
                 else -> Unit
             }
         }
+    }
+    LaunchedEffect(key1 = true) {
+        resultVM.updateResultState(result)
     }
 
     Column(
@@ -48,7 +57,7 @@ fun ResultScreen(
         verticalArrangement = Arrangement.Top,
     ) {
 
-        RowResult(text = stringResource(id = R.string.result_summary), resultVM)
+        RowResults(text = stringResource(id = R.string.result_summary), resultVM)
         MyVerticalSpacer(MaterialTheme.spacing.medium)
 
         CardResults(result.totalQuestions,
@@ -58,10 +67,10 @@ fun ResultScreen(
         MyVerticalSpacer(MaterialTheme.spacing.mediumPlus)
 
         Divider(color = MaterialTheme.colors.secondaryVariant, thickness = 1.dp)
-        MyVerticalSpacer(MaterialTheme.spacing.medium)
+        MyVerticalSpacer(MaterialTheme.spacing.small)
 
-        TextTitle(text = stringResource(id = R.string.result_detail))
-        MyVerticalSpacer(MaterialTheme.spacing.medium)
+        RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
+        MyVerticalSpacer(MaterialTheme.spacing.small)
 
         LazyColumn {
             itemsIndexed(questions) { index, question ->
@@ -73,7 +82,7 @@ fun ResultScreen(
 }
 
 @Composable
-fun RowResult(text: String, resultVM: ResultVM) {
+fun RowResults(text: String, resultVM: ResultVM) {
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Row(modifier = Modifier.weight(1f)) {
             TextTitle(text)
@@ -86,15 +95,6 @@ fun RowResult(text: String, resultVM: ResultVM) {
             )
         }
     }
-}
-
-@Composable
-fun TextTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.h6,
-        color = MaterialTheme.colors.secondaryVariant
-    )
 }
 
 @Composable
@@ -121,23 +121,60 @@ fun CardResults(
                     horizontalArrangement = Arrangement.Center) {
                     Text(text = "Tiempo: ${ResultState.timer}")
                 }
-                RowResult(
+                RowResults(
                     text = stringResource(id = R.string.result_correct_answers),
                     total = totalCorrect,
-                    emoji = stringResource(id = R.string.result_correct_emoji)
+                    emoji = stringResource(id = R.string.result_correct_emojis)
                 )
-                RowResult(
+                RowResults(
                     text = stringResource(id = R.string.result_incorrect_answers),
                     total = totalIncorrect,
-                    emoji = stringResource(id = R.string.result_incorrect_emoji)
+                    emoji = stringResource(id = R.string.result_incorrect_emojis)
                 )
-                RowResult(
-                    text = stringResource(id = R.string.result_not_answered),
+                RowResults(
+                    text = stringResource(id = R.string.result_not_answered_questions),
                     total = totalNotAnswered,
-                    emoji = stringResource(id = R.string.result_not_answered_emoji)
+                    emoji = stringResource(id = R.string.result_not_answered_emojis)
                 )
             }
         }
+    }
+}
+
+@Composable
+fun RowDetails(text: String, isDetailVisible: Boolean, resultVM: ResultVM) {
+    Log.i("MyTag", "RowDetails: $isDetailVisible")
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
+            TextTitle(text)
+            TextButton(onClick = { resultVM.onEvent(ResultEvent.OnViewHide(isDetailVisible)) }) {
+                Text(
+                    text = stringResource(
+                        id = if (isDetailVisible) R.string.result_hide else R.string.result_view
+                    ),
+                    style = MaterialTheme.typography.body2
+                )
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ButtonFilter(isDetailVisible, stringResource(R.string.result_correct_emoji))
+            ButtonFilter(isDetailVisible, stringResource(R.string.result_incorrect_emoji))
+            ButtonFilter(isDetailVisible, stringResource(R.string.result_not_answered_emoji))
+        }
+    }
+}
+
+@Composable
+fun ButtonFilter(isDetailVisible: Boolean, emoji: String) {
+    Button(
+        onClick = { /*TODO*/ },
+        modifier = Modifier.size(36.dp),
+        contentPadding = PaddingValues(0.dp),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+        elevation = ButtonDefaults.elevation(0.dp),
+        enabled = isDetailVisible
+    ) {
+        Text(text = emoji)
     }
 }
 
@@ -165,17 +202,28 @@ fun CardDetails(
     }
 }
 
+/**/
+@Composable
+fun TextTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.h6,
+        color = MaterialTheme.colors.secondaryVariant
+    )
+}
+
+
 @Composable
 fun DetailQuestion(index: Int, question: String, userAnswers: MutableList<Boolean?>) {
     Row {
-        Text(text = stringResource(id = R.string.result_detail_question_number, index + 1))
+        Text(text = stringResource(id = R.string.result_question_number, index + 1))
         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
         Text(text = question, modifier = Modifier.weight(1f))
         Text(
             text = stringResource(id =
-            if (userAnswers[index] == true) R.string.result_detail_correct_emoji
-            else if (userAnswers[index] == false) R.string.result_detail_incorrect_emoji
-            else R.string.result_detail_not_answered_emoji
+            if (userAnswers[index] == true) R.string.result_correct_emoji
+            else if (userAnswers[index] == false) R.string.result_incorrect_emoji
+            else R.string.result_not_answered_emoji
             )
         )
     }
@@ -193,15 +241,16 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircleOutline,
-                            contentDescription = stringResource(id = R.string.result_detail_correct),
+                            contentDescription = stringResource(id = R.string.result_correct),
                             tint = MaterialTheme.colors.surface
                         )
                         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                        Text(text = it, modifier = Modifier.weight(1f), style = MaterialTheme.typography.body2)
+                        Text(text = it,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.body2)
                     }
                 }
-            }
-            else if (it == userOption) {
+            } else if (it == userOption) {
                 Card(modifier = Modifier
                     .fillMaxWidth()
                     .height(MaterialTheme.spacing.mediumPlus),
@@ -209,20 +258,23 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
                             imageVector = Icons.Filled.HighlightOff,
-                            contentDescription = stringResource(id = R.string.result_detail_incorrect),
+                            contentDescription = stringResource(id = R.string.result_incorrect),
                             tint = MaterialTheme.colors.error
                         )
                         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                        Text(text = it, modifier = Modifier.weight(1f), style = MaterialTheme.typography.body2)
+                        Text(text = it,
+                            modifier = Modifier.weight(1f),
+                            style = MaterialTheme.typography.body2)
                     }
                 }
-            }
-            else {
+            } else {
                 Icon(imageVector = Icons.Filled.RadioButtonUnchecked,
-                    contentDescription = stringResource(id = R.string.result_detail_not_answered)
+                    contentDescription = stringResource(id = R.string.result_not_answered)
                 )
                 MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
-                Text(text = it, modifier = Modifier.weight(1f), style = MaterialTheme.typography.body2)
+                Text(text = it,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.body2)
             }
         }
     }
@@ -239,7 +291,7 @@ fun TextTotalOfQuestions(totalOfQuestions: Int) {
 }
 
 @Composable
-fun RowResult(text: String, total: Int, emoji: String) {
+fun RowResults(text: String, total: Int, emoji: String) {
     Row() {
         Text(
             text = text,

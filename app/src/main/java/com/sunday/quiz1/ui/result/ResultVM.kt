@@ -1,5 +1,6 @@
 package com.sunday.quiz1.ui.result
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -26,6 +27,12 @@ class ResultVM : ViewModel() {
                     AppEvent.Navigate(Routes.QUIZ_HOME + "?mem=" + true)
                 )
             }
+            is ResultEvent.OnViewHide -> {
+                Log.i("MyTag", "ResultVM1: ${event.isDetailVisible}")
+                Log.i("MyTag", "ResultVM1: ${resultState.isDetailVisible}")
+                resultState = resultState.copy(isDetailVisible = !event.isDetailVisible)
+                Log.i("MyTag", "ResultVM2: ${resultState.isDetailVisible}")
+            }
         }
     }
 
@@ -33,5 +40,10 @@ class ResultVM : ViewModel() {
         viewModelScope.launch {
             _appEvent.send(event)
         }
+    }
+
+    /**/
+    fun updateResultState(result: ResultState) {
+        resultState = result
     }
 }

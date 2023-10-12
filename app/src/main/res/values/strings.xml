@@ -17,21 +17,24 @@
 
     <!-- Result -->
     <string name="result_summary">Resultados</string>
+    <string name="result_home">Home</string>
     <string name="result_total_of_questions">Total de preguntas: %1$d 🧾</string>
     <string name="result_correct_answers">Respuestas correctas:</string>
-    <string name="result_correct_emoji">✅😎</string>
+    <string name="result_correct_emojis">✅😎</string>
     <string name="result_incorrect_answers">Respuestas incorrectas:</string>
-    <string name="result_incorrect_emoji">❌😨</string>
-    <string name="result_not_answered">Preguntas no contestadas:</string>
-    <string name="result_not_answered_emoji">📝🥴</string>
-    <string name="result_home">Home</string>
+    <string name="result_incorrect_emojis">❌😨</string>
+    <string name="result_not_answered_questions">Preguntas no contestadas:</string>
+    <string name="result_not_answered_emojis">📝🥴</string>
+    <!-- Result-Detail -->
     <string name="result_detail">Detalle</string>
-    <string name="result_detail_question_number">%1$d)</string>
-    <string name="result_detail_correct_emoji">✅</string>
-    <string name="result_detail_incorrect_emoji">❌</string>
-    <string name="result_detail_not_answered_emoji">📝</string>
-    <string name="result_detail_correct">Correcta</string>
-    <string name="result_detail_incorrect">Incorrecta</string>
-    <string name="result_detail_not_answered">No contestada</string>
+    <string name="result_view">Ver</string>
+    <string name="result_hide">Ocultar</string>
+    <string name="result_question_number">%1$d)</string>
+    <string name="result_correct_emoji">✅</string>
+    <string name="result_incorrect_emoji">❌</string>
+    <string name="result_not_answered_emoji">📝</string>
+    <string name="result_correct">Correcta</string>
+    <string name="result_incorrect">Incorrecta</string>
+    <string name="result_not_answered">No contestada</string>
 
 </resources>
