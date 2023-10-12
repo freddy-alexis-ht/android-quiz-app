@@ -74,7 +74,7 @@ fun ResultScreen(
 
         LazyColumn {
             itemsIndexed(questions) { index, question ->
-                CardDetails(index, question, userAnswers[index], userOptions)
+                CardDetails(index, question, userAnswers[index], userOptions[index])
                 MyVerticalSpacer(MaterialTheme.spacing.small)
             }
         }
@@ -182,7 +182,7 @@ fun CardDetails(
     index: Int,
     question: Question,
     userAnswer: Boolean?,
-    userOptions: MutableList<String>,
+    userOption: String,
 ) {
     Card(
         modifier = Modifier
@@ -195,7 +195,7 @@ fun CardDetails(
             contentAlignment = Alignment.CenterStart) {
             Column() {
                 DetailQuestion(index, question.question, userAnswer)
-                DetailOptions(question.options, question.result, userOptions[index])
+                DetailOptions(question.options, question.result, userOption)
             }
         }
     }
