@@ -4,11 +4,11 @@ import android.app.Activity
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +27,7 @@ import com.sunday.quiz1.ui.theme.spacing
 fun HomeScreen(
     onNavigate: (AppEvent.Navigate) -> Unit,
     homeVM: HomeVM,
-    mem: Boolean?
+    mem: Boolean?,
 ) {
     LaunchedEffect(key1 = true) {
         homeVM.appEvent.collect { event ->
@@ -66,11 +66,13 @@ fun HomeScreen(
         MyVerticalSpacer(MaterialTheme.spacing.medium)
 
         val activity: Activity? = (LocalContext.current as? Activity)
+        var show by rememberSaveable { mutableStateOf(false) }
         MyButton(
-            onclick = { homeVM.onEvent(HomeEvent.OnExit(activity)) },
+            onclick = { show = true },
             text = stringResource(id = R.string.home_exit),
             colors = MaterialTheme.colors.secondary,
         )
+        MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
     }
 }
 
@@ -83,8 +85,55 @@ fun Animation() {
     )
 }
 
-@Preview(name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showSystemUi = true, showBackground = true)
-@Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true, showBackground = true)
+@Composable
+fun MyDialog(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    if (show) {
+        AlertDialog(
+            title = {
+                Column {
+                    Text(text = stringResource(id = R.string.home_exit),
+                        style = MaterialTheme.typography.body1)
+                    MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
+                    Divider()
+                }
+            },
+            text = {
+                Text(text = stringResource(id = R.string.home_exit_question),
+                    style = MaterialTheme.typography.body2)
+            },
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = { onConfirm() }) {
+                    Text(text = stringResource(id = R.string.home_exit_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { onDismiss() },
+                ) {
+                    Text(text = stringResource(id = R.string.home_exit_cancel),
+                        color = MaterialTheme.colors.secondary
+                    )
+                }
+            },
+            backgroundColor = MaterialTheme.colors.background
+        )
+    }
+}
+
+
+@Preview(name = "Light",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showSystemUi = true,
+    showBackground = true)
+@Preview(name = "Dark",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showSystemUi = true,
+    showBackground = true)
 @Composable
 fun StartPreview() {
     Quiz1Theme {
@@ -94,8 +143,14 @@ fun StartPreview() {
     }
 }
 
-@Preview(name = "Light", uiMode = Configuration.UI_MODE_NIGHT_NO, showSystemUi = true, showBackground = true)
-@Preview(name = "Dark", uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true, showBackground = true)
+@Preview(name = "Light",
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showSystemUi = true,
+    showBackground = true)
+@Preview(name = "Dark",
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showSystemUi = true,
+    showBackground = true)
 @Composable
 fun RestartPreview() {
     Quiz1Theme {

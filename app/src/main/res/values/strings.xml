@@ -6,6 +6,9 @@
     <string name="home_restart">Reiniciar</string>
     <string name="home_continue">Continuar</string>
     <string name="home_exit">Salir</string>
+    <string name="home_exit_question">Si sales se perderá tu progreso. ¿Deseas salir de la app?</string>
+    <string name="home_exit_confirm">OK</string>
+    <string name="home_exit_cancel">Cancelar</string>
 
     <!-- Question -->
     <string name="question_number">%1$d/%2$d</string>
