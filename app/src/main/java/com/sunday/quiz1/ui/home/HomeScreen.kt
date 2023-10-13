@@ -37,43 +37,50 @@ fun HomeScreen(
             }
         }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(MaterialTheme.spacing.mediumPlus),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Animation()
-        if (mem!!) {
-            MyButton(
-                onclick = { homeVM.onEvent(HomeEvent.OnStart) },
-                text = stringResource(id = R.string.home_start)
-            )
-        } else {
-            MyButton(
-                onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
-                text = stringResource(id = R.string.home_continue)
-            )
-            MyVerticalSpacer(MaterialTheme.spacing.medium)
-            MyButton(
-                onclick = { homeVM.onEvent(HomeEvent.OnStart) },
-                text = stringResource(id = R.string.home_restart),
-                colors = MaterialTheme.colors.secondaryVariant
-            )
+    if (homeVM.state.isNew) {
+        Box(Modifier.fillMaxSize()) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
-        MyVerticalSpacer(MaterialTheme.spacing.medium)
+        homeVM.hideLoading()
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(MaterialTheme.spacing.mediumPlus),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Animation()
+            if (mem!!) {
+                MyButton(
+                    onclick = { homeVM.onEvent(HomeEvent.OnStart) },
+                    text = stringResource(id = R.string.home_start)
+                )
+            } else {
+                MyButton(
+                    onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
+                    text = stringResource(id = R.string.home_continue)
+                )
+                MyVerticalSpacer(MaterialTheme.spacing.medium)
+                MyButton(
+                    onclick = { homeVM.onEvent(HomeEvent.OnStart) },
+                    text = stringResource(id = R.string.home_restart),
+                    colors = MaterialTheme.colors.secondaryVariant
+                )
+            }
+            MyVerticalSpacer(MaterialTheme.spacing.medium)
 
-        val activity: Activity? = (LocalContext.current as? Activity)
-        var show by rememberSaveable { mutableStateOf(false) }
-        MyButton(
-            onclick = { show = true },
-            text = stringResource(id = R.string.home_exit),
-            colors = MaterialTheme.colors.secondary,
-        )
-        MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
+            val activity: Activity? = (LocalContext.current as? Activity)
+            var show by rememberSaveable { mutableStateOf(false) }
+            MyButton(
+                onclick = { show = true },
+                text = stringResource(id = R.string.home_exit),
+                colors = MaterialTheme.colors.secondary,
+            )
+            MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
+        }
     }
+
 }
 
 @Composable

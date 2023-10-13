@@ -12,6 +12,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.sunday.quiz1.ui.common.Navigation
 import com.sunday.quiz1.ui.home.HomeVM
 import com.sunday.quiz1.ui.question.QuestionVM
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Quiz1Theme {
+                window?.statusBarColor = MaterialTheme.colors.surface.toArgb()
                 Box(modifier = Modifier.fillMaxSize()
                     .background(Brush.verticalGradient(
                         colors = listOf(
