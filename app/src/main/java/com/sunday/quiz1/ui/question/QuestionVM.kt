@@ -6,8 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sunday.quiz1.data.model.QuestionModel
-import com.sunday.quiz1.domain.use_case.GetQuestionUseCase
+import com.sunday.quiz1.data.model.Question
+import com.sunday.quiz1.data.model.Timer
+import com.sunday.quiz1.domain.use_case.GetAllQuestionsUseCase
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.result.ResultState
 import com.sunday.quiz1.ui.common.Routes
@@ -19,14 +20,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuestionVM @Inject constructor(
-    private val getQuestionUseCase: GetQuestionUseCase,
+    private val getAllQuestionsUseCase: GetAllQuestionsUseCase,
 ) : ViewModel() {
 
-    var state by mutableStateOf(QuestionState())
+    lateinit var questions: List<Question>
+    init {
+        viewModelScope.launch {
+            questions = getAllQuestionsUseCase().data!!
+        }
+    }
+
+    var timer by mutableStateOf(Timer())
+        private set
+    var state by mutableStateOf(QuestionState(size = questions.size))
         private set
     var userOptions = state.userOptions.toMutableStateList()
-        private set
-    var resultState by mutableStateOf(ResultState())
         private set
 
     private val _appEvent = Channel<AppEvent>()
@@ -38,6 +46,7 @@ class QuestionVM @Inject constructor(
             is QuestionEvent.OnPrevious -> onPrevious(event.index)
             is QuestionEvent.OnNext -> onNext(event.index)
             is QuestionEvent.OnFinish -> onFinish(event.index)
+            is QuestionEvent.OnJumpTo -> onJumpTo(event.indexOrigin, event.indexDestiny)
             QuestionEvent.OnHome -> onHome()
         }
     }
@@ -65,13 +74,21 @@ class QuestionVM @Inject constructor(
 
     private fun onFinish(index: Int) {
         validateUserOption(index)
-        generateQuizResults()
-        for (i in 0 until Question.getSize()) {
+        sendResultsToResultScreen()
+        for (i in questions.indices) {
             userOptions[i] = ""
         }
         state = state.copy(index = 0)
         sendAppEvent(
             AppEvent.Navigate(Routes.QUIZ_RESULTS)
+        )
+    }
+
+    private fun onJumpTo(indexOrigin: Int, indexDestiny: Int) {
+        validateUserOption(indexOrigin)
+        state = state.copy(
+            optionSelected = "",
+            index = indexDestiny
         )
     }
 
@@ -90,77 +107,50 @@ class QuestionVM @Inject constructor(
 
     /* Utilitary functions */
     private fun validateUserOption(index: Int) {
-        var i: Int
-        if (userOptions[index] != "") {
-            i = Question.getOne(index).options.indexOf(userOptions[index])
-        } else {
-            i = Question.getOne(index).options.indexOf(state.optionSelected)
-        }
+        var userAnswer = if(userOptions[index] != "") userOptions[index]
+        else state.optionSelected
 
-//        viewModelScope.launch {
-//            val questionUseCase: QuestionModel? = getQuestionUseCase(index).data
-//            var b: Boolean? = if (i != -1) questionUseCase!!.results[i]
-//            else null
-//            state.userAnswers[index] = b
-//        }
-        var b: Boolean? = if (i != -1) Question.getOne(index).results[i]
-        else null
-        state.userAnswers[index] = b
+        var userBoolean = if(userAnswer == "") null
+        else userAnswer == questions[index].result
+
+        state.userAnswers[index] = userBoolean
 
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
         }
     }
 
-    private fun generateQuizResults() {
-        resultState = resultState.copy(
-            totalQuestions = Question.getSize(),
-            totalCorrect = state.userAnswers.count { it == true },
-            totalIncorrect = state.userAnswers.count { it == false },
-            totalNotAnswered = state.userAnswers.count { it == null },
-            correctQuestions = this.getCorrectQuestions(),
-            incorrectQuestions = this.getIncorrectQuestions(),
-            notAnsweredQuestions = this.getNotAnsweredQuestions()
-        )
-    }
-
-    private fun getCorrectQuestions(): String {
-        var n: Int = 1
-        var correct: String = "*"
-        state.userAnswers.forEach {
-            if (it == true) correct += " $n"
-            n++
-        }
-        return correct
-    }
-
-    private fun getIncorrectQuestions(): String {
-        var n: Int = 1
-        var incorrect: String = "*"
-        state.userAnswers.forEach {
-            if (it == false) incorrect += " $n"
-            n++
-        }
-        return incorrect
-    }
-
-    private fun getNotAnsweredQuestions(): String {
-        var n: Int = 1
-        var notAnswered: String = "*"
-        state.userAnswers.forEach {
-            if (it == null) notAnswered += " $n"
-            n++
-        }
-        return notAnswered
+    private fun sendResultsToResultScreen() {
+        ResultState.timer = formatTimer(timer.ticks)
+        ResultState.size = questions.size
+        ResultState.userOptions = userOptions.toMutableList()
+        ResultState.userAnswers = state.userAnswers
     }
 
     fun clearUserOptions() {
-        for (i in 0 until Question.getSize()) {
+        for (i in questions.indices) {
             userOptions[i] = ""
+            state.userAnswers[i] = null
         }
         state = state.copy(
             userOptions = userOptions,
-            optionSelected = ""
+            userAnswers = state.userAnswers,
+            optionSelected = "",
         )
+        timer = timer.copy(
+            ticks = 0,
+            continueRestart = !timer.continueRestart
+        )
+    }
+
+    /* Timer functions*/
+    fun increaseTimer(ticks: Int) {
+        timer = timer.copy(ticks = ticks)
+    }
+    fun formatTimer(ticks: Int) : String {
+        val seconds = "%02d".format(ticks % 60)
+        val minutes = "%02d".format((ticks / 60) % 60)
+        val hours = "%02d".format((ticks / 3600) % 60)
+        return if(hours=="00") "$minutes:$seconds" else "${hours}:$minutes:$seconds"
     }
 }

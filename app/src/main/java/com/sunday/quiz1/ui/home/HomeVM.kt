@@ -35,8 +35,8 @@ class HomeVM : ViewModel() {
                     AppEvent.Navigate(Routes.QUIZ_QUESTION+ "?newQuiz=" + false)
                 )
             }
-            HomeEvent.OnExit -> {
-                Log.i("MyTag", "onExit clicked")
+            is HomeEvent.OnExit -> {
+                event.activity?.finish()
             }
         }
     }

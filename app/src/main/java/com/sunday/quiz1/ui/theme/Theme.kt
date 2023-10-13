@@ -5,27 +5,34 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
-)
+import androidx.compose.runtime.ReadOnlyComposable
+import com.sunday.quiz1.ui.common.LocalSpacing
+import com.sunday.quiz1.ui.common.Spacing
 
 private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
-
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+    primary = Orange400,
+    primaryVariant = Indigo300,
+    secondary = DeepPurple400,
+    secondaryVariant = Grey400,
+    surface = Green900,
+    background = Grey300,
+    error = Red500
 )
+
+private val DarkColorPalette = darkColors(
+    primary = Amber600,
+    primaryVariant = Indigo400,
+    secondary = DeepPurple600,
+    secondaryVariant = Grey500,
+    surface = Green900,
+    background = Grey900,
+    error = Red400
+)
+
+val MaterialTheme.spacing: Spacing
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalSpacing.current
 
 @Composable
 fun Quiz1Theme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {

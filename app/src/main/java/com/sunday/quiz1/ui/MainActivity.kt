@@ -4,6 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import com.sunday.quiz1.ui.common.Navigation
 import com.sunday.quiz1.ui.home.HomeVM
 import com.sunday.quiz1.ui.question.QuestionVM
@@ -22,7 +30,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Quiz1Theme {
-                Navigation(homeVM = homeVM, questionVM = questionVM, resultVM = resultVM)
+                Box(modifier = Modifier.fillMaxSize()
+                    .background(Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colors.surface,
+                            MaterialTheme.colors.background,
+                        ),
+                        startY = 800f
+                    )),
+                ) {
+                    Navigation(homeVM = homeVM, questionVM = questionVM, resultVM = resultVM)
+                }
             }
         }
     }
