@@ -84,7 +84,6 @@ fun ResultScreen(
                     question,
                     userAnswers[index],
                     userOptions[index])
-                MyVerticalSpacer(MaterialTheme.spacing.small)
             }
         }
     }
@@ -97,11 +96,11 @@ fun RowResults(text: String, onHome: () -> Unit) {
             TextTitle(text)
         }
         Row {
-            MyButton(
-                onclick = { onHome() },
-                text = stringResource(id = R.string.result_home),
-                modifier = Modifier.fillMaxWidth(0.2f)
-            )
+            Button(onClick = { onHome() }, shape = MaterialTheme.shapes.medium,
+            ) {
+                Text(text = stringResource(id = R.string.result_home),
+                )
+            }
         }
     }
 }
@@ -116,12 +115,14 @@ fun CardResults(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(MaterialTheme.spacing.cardResults),
+            .height(IntrinsicSize.Min)
+            .wrapContentHeight(),
         backgroundColor = MaterialTheme.colors.secondaryVariant,
         shape = MaterialTheme.shapes.medium,
     ) {
         Box(contentAlignment = Alignment.CenterStart) {
             Column(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium)) {
+                MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
                 Row(modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center) {
                     TextTotalOfQuestions(totalOfQuestions)
@@ -145,6 +146,7 @@ fun CardResults(
                     total = totalNotAnswered,
                     emoji = stringResource(id = R.string.result_not_answered_emojis)
                 )
+                MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
             }
         }
     }
@@ -226,18 +228,22 @@ fun CardDetails(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(MaterialTheme.spacing.cardDetails),
+            .height(IntrinsicSize.Min)
+            .wrapContentHeight(),
         backgroundColor = MaterialTheme.colors.secondaryVariant,
         shape = MaterialTheme.shapes.medium
     ) {
         Box(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
             contentAlignment = Alignment.CenterStart) {
             Column() {
+                MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
                 DetailQuestion(index, question.question, userAnswer)
                 DetailOptions(question.options, question.result, userOption)
+                MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
             }
         }
     }
+    MyVerticalSpacer(MaterialTheme.spacing.small)
 }
 
 /**/
