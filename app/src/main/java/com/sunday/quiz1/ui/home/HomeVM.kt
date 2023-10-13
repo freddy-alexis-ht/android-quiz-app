@@ -10,6 +10,7 @@ import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.question.QuestionState
 import com.sunday.quiz1.ui.common.Routes
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -46,5 +47,10 @@ class HomeVM : ViewModel() {
             _appEvent.send(event)
         }
     }
-
+    fun hideLoading() {
+        viewModelScope.launch {
+            delay(500L)
+            state = state.copy(isNew = false)
+        }
+    }
 }
