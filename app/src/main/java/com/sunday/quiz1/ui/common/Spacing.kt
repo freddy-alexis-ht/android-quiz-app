@@ -12,6 +12,7 @@ data class Spacing(
     val medium: Dp = 16.dp,
     val mediumPlus: Dp = 24.dp,
     val large: Dp = 32.dp,
+    val largePlus: Dp = 48.dp,
     val extraLarge: Dp = 64.dp,
     /* Others */
     val lottieAnimation: Dp = 400.dp,
