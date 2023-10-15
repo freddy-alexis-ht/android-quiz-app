@@ -10,6 +10,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +34,7 @@ fun QuestionScreen(
     val questions = questionVM.questions
     val numberOfQuestions = questionVM.questions.size
     val lazyListState: LazyListState = rememberLazyListState()
+
     LaunchedEffect(key1 = true) {
         questionVM.appEvent.collect { event ->
             when (event) {
@@ -141,7 +143,7 @@ fun IconButtonPrevious(
     Card(
         shape = MaterialTheme.shapes.large,
         border = BorderStroke(width = MaterialTheme.spacing.default,
-        color = MaterialTheme.colors.primary),
+            color = MaterialTheme.colors.primary),
     ) {
         IconButton(
             onClick = {
@@ -284,9 +286,21 @@ fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState) 
             text = stringResource(id = R.string.question_next)
         )
     } else {
+        var show by rememberSaveable { mutableStateOf(false) }
         MyButton(
-            onclick = { questionVM.onEvent(QuestionEvent.OnFinish(index)) },
+            onclick = {
+                questionVM.validateUserOption(index)
+                val nullAnswers = questionVM.state.userAnswers.count { it == null }
+                if (nullAnswers == 0) questionVM.onEvent(QuestionEvent.OnFinish(index))
+                else show = true
+            },
             text = stringResource(id = R.string.question_finish)
+        )
+        MyDialog(
+            show = show,
+            nullAnswers = questionVM.state.userAnswers.count { it == null },
+            onDismiss = { show = false },
+            onConfirm = { questionVM.onEvent(QuestionEvent.OnFinish(index)) }
         )
     }
     MyVerticalSpacer(MaterialTheme.spacing.medium)
@@ -298,3 +312,43 @@ fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState) 
     )
 }
 
+@Composable
+fun MyDialog(
+    show: Boolean,
+    nullAnswers: Int,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    if (show) {
+        AlertDialog(
+            title = {
+                Column {
+                    Text(stringResource(id = R.string.question_finish),
+                        style = MaterialTheme.typography.body1)
+                    MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
+                    Divider()
+                }
+            },
+            text = {
+                Text(text = stringResource(id = R.string.question_finish_question, nullAnswers),
+                    style = MaterialTheme.typography.body2)
+            },
+            onDismissRequest = { onDismiss() },
+            confirmButton = {
+                TextButton(onClick = { onConfirm() }) {
+                    Text(text = stringResource(id = R.string.dialog_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { onDismiss() },
+                ) {
+                    Text(text = stringResource(id = R.string.dialog_cancel),
+                        color = MaterialTheme.colors.secondary
+                    )
+                }
+            },
+            backgroundColor = MaterialTheme.colors.background
+        )
+    }
+}

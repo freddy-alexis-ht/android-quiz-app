@@ -7,14 +7,16 @@
     <string name="home_continue">Continuar</string>
     <string name="home_exit">Salir</string>
     <string name="home_exit_question">Si sales se perderá tu progreso. ¿Deseas salir de la app?</string>
-    <string name="home_exit_confirm">OK</string>
-    <string name="home_exit_cancel">Cancelar</string>
+
+    <string name="dialog_confirm">OK</string>
+    <string name="dialog_cancel">Cancelar</string>
 
     <!-- Question -->
     <string name="question_number">%1$d/%2$d</string>
     <string name="question_previous">Atrás</string>
     <string name="question_next">Siguiente</string>
     <string name="question_finish">Finalizar</string>
+    <string name="question_finish_question">Preguntas pendientes por responder: %1$s. ¿Deseas finalizar de todos modos?</string>
     <string name="question_home">Home</string>
     <string name="question_home_pause_clock">\n(El reloj se pausará)</string>
 
