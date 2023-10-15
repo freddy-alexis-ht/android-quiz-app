@@ -40,7 +40,7 @@ fun ResultScreen(
         resultVM.appEvent.collect { event ->
             when (event) {
                 is AppEvent.Navigate -> onNavigate(event)
-                else -> Unit
+                AppEvent.PopBackStack -> resultVM.onEvent(ResultEvent.OnHome)
             }
         }
     }

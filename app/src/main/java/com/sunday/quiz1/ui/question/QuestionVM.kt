@@ -1,5 +1,6 @@
 package com.sunday.quiz1.ui.question
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -73,12 +74,9 @@ class QuestionVM @Inject constructor(
     }
 
     private fun onFinish(index: Int) {
-        validateUserOption(index)
+//        validateUserOption(index)
         sendResultsToResultScreen()
-        for (i in questions.indices) {
-            userOptions[i] = ""
-        }
-        state = state.copy(index = 0)
+        clearUserOptions()
         sendAppEvent(
             AppEvent.Navigate(Routes.QUIZ_RESULTS)
         )
@@ -93,7 +91,6 @@ class QuestionVM @Inject constructor(
     }
 
     private fun onHome() {
-        state = state.copy(index = 0)
         sendAppEvent(
             AppEvent.Navigate(Routes.QUIZ_HOME + "?mem=" + false)
         )
@@ -106,7 +103,8 @@ class QuestionVM @Inject constructor(
     }
 
     /* Utilitary functions */
-    private fun validateUserOption(index: Int) {
+
+    fun validateUserOption(index: Int) {
         var userAnswer = if(userOptions[index] != "") userOptions[index]
         else state.optionSelected
 
@@ -114,7 +112,7 @@ class QuestionVM @Inject constructor(
         else userAnswer == questions[index].result
 
         state.userAnswers[index] = userBoolean
-
+        Log.i("MyTag", "validateUserOption: ${state.userAnswers.toList()}")
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
         }
@@ -124,7 +122,7 @@ class QuestionVM @Inject constructor(
         ResultState.timer = formatTimer(timer.ticks)
         ResultState.size = questions.size
         ResultState.userOptions = userOptions.toMutableList()
-        ResultState.userAnswers = state.userAnswers
+        ResultState.userAnswers = state.userAnswers.toMutableList()
     }
 
     fun clearUserOptions() {
@@ -133,6 +131,7 @@ class QuestionVM @Inject constructor(
             state.userAnswers[i] = null
         }
         state = state.copy(
+            index = 0,
             userOptions = userOptions,
             userAnswers = state.userAnswers,
             optionSelected = "",
