@@ -75,9 +75,7 @@ class QuestionVM @Inject constructor(
     private fun onFinish(index: Int) {
         validateUserOption(index)
         sendResultsToResultScreen()
-        for (i in questions.indices) {
-            userOptions[i] = ""
-        }
+        clearUserOptions()
         state = state.copy(index = 0)
         sendAppEvent(
             AppEvent.Navigate(Routes.QUIZ_RESULTS)

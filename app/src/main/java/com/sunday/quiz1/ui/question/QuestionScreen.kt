@@ -37,7 +37,7 @@ fun QuestionScreen(
         questionVM.appEvent.collect { event ->
             when (event) {
                 is AppEvent.Navigate -> onNavigate(event)
-                else -> Unit
+                AppEvent.PopBackStack -> questionVM.onEvent((QuestionEvent.OnHome))
             }
         }
     }
