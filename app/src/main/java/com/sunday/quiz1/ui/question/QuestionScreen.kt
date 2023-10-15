@@ -1,8 +1,11 @@
 package com.sunday.quiz1.ui.question
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -17,6 +20,7 @@ import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.ui.common.*
 import com.sunday.quiz1.ui.theme.spacing
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -28,7 +32,7 @@ fun QuestionScreen(
     var index = questionVM.state.index
     val questions = questionVM.questions
     val numberOfQuestions = questionVM.questions.size
-
+    val lazyListState: LazyListState = rememberLazyListState()
     LaunchedEffect(key1 = true) {
         questionVM.appEvent.collect { event ->
             when (event) {
@@ -51,10 +55,10 @@ fun QuestionScreen(
         RowTimer(questionVM)
         MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
 
-        RowProgression(questionVM, index, numberOfQuestions)
+        RowProgression(questionVM, index, numberOfQuestions, lazyListState)
         MyVerticalSpacer(MaterialTheme.spacing.medium)
 
-        RowQuestionSwitch(questionVM, index, numberOfQuestions)
+        RowQuestionSwitch(questionVM, index, numberOfQuestions, lazyListState)
         MyVerticalSpacer(MaterialTheme.spacing.large)
 
         RowQuestion(index, questions)
@@ -63,7 +67,7 @@ fun QuestionScreen(
         RadioButtonOptions(questionVM, index, questions)
         MyVerticalSpacer(MaterialTheme.spacing.large)
 
-        ButtonNav(questionVM, index)
+        ButtonNav(questionVM, index, lazyListState)
     }
 }
 
@@ -91,7 +95,12 @@ fun RowTimer(questionVM: QuestionVM) {
 }
 
 @Composable
-fun RowProgression(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
+fun RowProgression(
+    questionVM: QuestionVM,
+    index: Int,
+    numberOfQuestions: Int,
+    lazyListState: LazyListState,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -101,7 +110,7 @@ fun RowProgression(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
         MyHorizontalSpacer(MaterialTheme.spacing.medium)
         MyProgressIndicator(index, numberOfQuestions, Modifier.weight(1.0f, true))
         MyHorizontalSpacer(MaterialTheme.spacing.medium)
-        IconButtonPrevious(questionVM, index)
+        IconButtonPrevious(questionVM, index, lazyListState)
     }
 }
 
@@ -109,28 +118,41 @@ fun RowProgression(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
 fun TextNumberOfQuestion(index: Int, numberOfQuestions: Int) {
     Text(
         text = stringResource(id = R.string.question_number,
-        index + 1, numberOfQuestions),
+            index + 1, numberOfQuestions),
         style = MaterialTheme.typography.body2
     )
 }
 
 @Composable
-fun MyProgressIndicator(index: Int, numberOfQuestions: Int, modifier: Modifier = Modifier) {
+fun MyProgressIndicator(index: Int, numberOfQuestions: Int, modifier: Modifier) {
     LinearProgressIndicator(
-        progress = (index + 1) / numberOfQuestions.toFloat()
+        progress = (index + 1) / numberOfQuestions.toFloat(),
+        modifier = modifier.width(200.dp)
     )
 }
 
 @Composable
-fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
+fun IconButtonPrevious(
+    questionVM: QuestionVM,
+    index: Int,
+    lazyListState: LazyListState,
+) {
+    val coroutineScope = rememberCoroutineScope()
     Card(
         shape = MaterialTheme.shapes.large,
-        border = BorderStroke(width = MaterialTheme.spacing.default, color = MaterialTheme.colors.primary),
+        border = BorderStroke(width = MaterialTheme.spacing.default,
+        color = MaterialTheme.colors.primary),
     ) {
         IconButton(
-            onClick = { questionVM.onEvent(QuestionEvent.OnPrevious(index)) },
+            onClick = {
+                questionVM.onEvent(QuestionEvent.OnPrevious(index))
+                coroutineScope.launch {
+                    lazyListState.animateScrollAndCentralizeItem(index - 1)
+                }
+            },
             modifier = Modifier.background(
-                if(index != 0) MaterialTheme.colors.secondary else MaterialTheme.colors.surface
+                if (index != 0) MaterialTheme.colors.secondary
+                else MaterialTheme.colors.surface
             ),
             enabled = index != 0,
         ) {
@@ -142,40 +164,61 @@ fun IconButtonPrevious(questionVM: QuestionVM, index: Int) {
     }
 }
 
+suspend fun LazyListState.animateScrollAndCentralizeItem(index: Int) {
+    val itemInfo = this.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+    if (itemInfo != null) {
+        val center = layoutInfo.viewportEndOffset / 2
+        val childCenter = itemInfo.offset + itemInfo.size / 2
+        animateScrollBy((childCenter - center).toFloat())
+    } else {
+        animateScrollToItem(index)
+    }
+}
 
 @Composable
-fun RowQuestionSwitch(questionVM: QuestionVM, index: Int, numberOfQuestions: Int) {
-
+fun RowQuestionSwitch(
+    questionVM: QuestionVM,
+    index: Int,
+    numberOfQuestions: Int,
+    lazyListState: LazyListState,
+) {
     var answers = questionVM.state.userAnswers
     var color: Color
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.Center
+    val coroutineScope = rememberCoroutineScope()
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        state = lazyListState,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.small,
+            Alignment.CenterHorizontally),
     ) {
-        for (i in 1..numberOfQuestions) {
+        items(numberOfQuestions) { i ->
             color =
-                if (i - 1 == index) MaterialTheme.colors.primary
-                else if (answers[i - 1] == null) MaterialTheme.colors.secondaryVariant
+                if (i == index) MaterialTheme.colors.primary
+                else if (answers[i] == null) MaterialTheme.colors.secondaryVariant
                 else MaterialTheme.colors.primaryVariant
 
-            MyHorizontalSpacer(MaterialTheme.spacing.small)
             Card(
                 shape = MaterialTheme.shapes.large,
-                border = BorderStroke(width = MaterialTheme.spacing.simple, color = MaterialTheme.colors.primary),
-                backgroundColor = color
+                border = BorderStroke(width = MaterialTheme.spacing.simple,
+                    color = MaterialTheme.colors.primary),
+                backgroundColor = color,
+                modifier = Modifier.width(MaterialTheme.spacing.large)
             ) {
                 IconButton(
-                    onClick = { questionVM.onEvent(QuestionEvent.OnJumpTo(index,i - 1)) },
+                    onClick = {
+                        questionVM.onEvent(QuestionEvent.OnJumpTo(index, i))
+                        coroutineScope.launch {
+                            lazyListState.animateScrollAndCentralizeItem(i)
+                        }
+                    },
                 ) {
                     Text(
-                        text = i.toString(),
+                        text = (i + 1).toString(),
                         style = MaterialTheme.typography.body2
                     )
                 }
             }
         }
-        MyHorizontalSpacer(MaterialTheme.spacing.small)
     }
 }
 
@@ -228,10 +271,16 @@ fun RadioButtonOptions(questionVM: QuestionVM, index: Int, questions: List<Quest
 }
 
 @Composable
-fun ButtonNav(questionVM: QuestionVM, index: Int) {
+fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState) {
+    val coroutineScope = rememberCoroutineScope()
     if (index != Question.getList().size - 1) {
         MyButton(
-            onclick = { questionVM.onEvent(QuestionEvent.OnNext(index)) },
+            onclick = {
+                questionVM.onEvent(QuestionEvent.OnNext(index))
+                coroutineScope.launch {
+                    lazyListState.animateScrollAndCentralizeItem(index + 1)
+                }
+            },
             text = stringResource(id = R.string.question_next)
         )
     } else {
