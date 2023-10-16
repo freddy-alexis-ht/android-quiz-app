@@ -16,7 +16,5 @@ data class Spacing(
     val extraLarge: Dp = 64.dp,
     /* Others */
     val lottieAnimation: Dp = 400.dp,
-    val cardResults: Dp = 130.dp,
-    val cardDetails: Dp = 110.dp,
 )
 val LocalSpacing = compositionLocalOf { Spacing() }
