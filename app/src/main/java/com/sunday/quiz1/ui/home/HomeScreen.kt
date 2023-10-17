@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,37 +36,70 @@ fun HomeScreen(
             }
         }
     }
+
+    var orientation by remember { mutableStateOf(Configuration.ORIENTATION_PORTRAIT) }
+    val configuration = LocalConfiguration.current
+
+    LaunchedEffect(configuration) {
+        snapshotFlow { configuration.orientation }
+            .collect { orientation = it }
+    }
+
     if (homeVM.state.isNew) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
         homeVM.hideLoading()
     } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(MaterialTheme.spacing.mediumPlus),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Animation()
-            if (mem!!) {
-                MyButton(
-                    onclick = { homeVM.onEvent(HomeEvent.OnStart) },
-                    text = stringResource(id = R.string.home_start)
-                )
-            } else {
-                MyButton(
-                    onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
-                    text = stringResource(id = R.string.home_continue)
-                )
-                MyVerticalSpacer(MaterialTheme.spacing.medium)
-                MyButton(
-                    onclick = { homeVM.onEvent(HomeEvent.OnStart) },
-                    text = stringResource(id = R.string.home_restart),
-                    colors = MaterialTheme.colors.secondaryVariant
-                )
+
+        when (orientation) {
+            Configuration.ORIENTATION_PORTRAIT -> {
+                PortraitContent(homeVM, mem)
             }
+            else -> {
+                LandscapeContent(homeVM, mem)
+            }
+        }
+    }
+}
+
+@Composable
+fun PortraitContent(homeVM: HomeVM, mem: Boolean?) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.mediumPlus),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Animation()
+        ButtonsHome(homeVM, mem)
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+        val activity: Activity? = (LocalContext.current as? Activity)
+        var show by rememberSaveable { mutableStateOf(false) }
+        MyButton(
+            onclick = { show = true },
+            text = stringResource(id = R.string.home_exit),
+            colors = MaterialTheme.colors.secondary,
+        )
+        MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
+    }
+}
+
+@Composable
+fun LandscapeContent(homeVM: HomeVM, mem: Boolean?) {
+    Row(modifier = Modifier
+        .fillMaxSize()
+        .padding(MaterialTheme.spacing.mediumPlus),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column() {
+            Animation()
+        }
+        Column() {
+            ButtonsHome(homeVM, mem)
             MyVerticalSpacer(MaterialTheme.spacing.medium)
 
             val activity: Activity? = (LocalContext.current as? Activity)
@@ -78,7 +112,6 @@ fun HomeScreen(
             MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
         }
     }
-
 }
 
 @Composable
@@ -88,6 +121,28 @@ fun Animation() {
         modifier = Modifier.size(MaterialTheme.spacing.lottieAnimation),
         composition = composition
     )
+}
+
+@Composable
+fun ButtonsHome(homeVM: HomeVM, mem: Boolean?) {
+    if (mem!!) {
+        MyButton(
+            onclick = { homeVM.onEvent(HomeEvent.OnStart) },
+            text = stringResource(id = R.string.home_start)
+        )
+    } else {
+        MyButton(
+            onclick = { homeVM.onEvent(HomeEvent.OnContinue) },
+            text = stringResource(id = R.string.home_continue)
+        )
+        MyVerticalSpacer(MaterialTheme.spacing.medium)
+        MyButton(
+            onclick = { homeVM.onEvent(HomeEvent.OnStart) },
+            text = stringResource(id = R.string.home_restart),
+            colors = MaterialTheme.colors.secondaryVariant
+        )
+    }
+
 }
 
 @Composable
