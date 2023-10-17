@@ -28,6 +28,8 @@ fun HomeScreen(
     homeVM: HomeVM,
     mem: Boolean?,
 ) {
+    val configuration = LocalConfiguration.current
+
     LaunchedEffect(key1 = true) {
         homeVM.appEvent.collect { event ->
             when (event) {
@@ -37,22 +39,13 @@ fun HomeScreen(
         }
     }
 
-    var orientation by remember { mutableStateOf(Configuration.ORIENTATION_PORTRAIT) }
-    val configuration = LocalConfiguration.current
-
-    LaunchedEffect(configuration) {
-        snapshotFlow { configuration.orientation }
-            .collect { orientation = it }
-    }
-
     if (homeVM.state.isNew) {
         Box(Modifier.fillMaxSize()) {
             CircularProgressIndicator(Modifier.align(Alignment.Center))
         }
         homeVM.hideLoading()
     } else {
-
-        when (orientation) {
+        when (configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
                 PortraitContent(homeVM, mem)
             }
@@ -65,6 +58,9 @@ fun HomeScreen(
 
 @Composable
 fun PortraitContent(homeVM: HomeVM, mem: Boolean?) {
+    val activity: Activity? = (LocalContext.current as? Activity)
+    var show by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,25 +69,22 @@ fun PortraitContent(homeVM: HomeVM, mem: Boolean?) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Animation()
-        ButtonsHome(homeVM, mem)
+        ButtonStartRestartContinue(homeVM, mem)
         MyVerticalSpacer(MaterialTheme.spacing.medium)
-
-        val activity: Activity? = (LocalContext.current as? Activity)
-        var show by rememberSaveable { mutableStateOf(false) }
-        MyButton(
-            onclick = { show = true },
-            text = stringResource(id = R.string.home_exit),
-            colors = MaterialTheme.colors.secondary,
-        )
+        ButtonExit(onclick = { show = true })
         MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
     }
 }
 
 @Composable
 fun LandscapeContent(homeVM: HomeVM, mem: Boolean?) {
-    Row(modifier = Modifier
-        .fillMaxSize()
-        .padding(MaterialTheme.spacing.mediumPlus),
+    val activity: Activity? = (LocalContext.current as? Activity)
+    var show by rememberSaveable { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.mediumPlus),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -99,16 +92,9 @@ fun LandscapeContent(homeVM: HomeVM, mem: Boolean?) {
             Animation()
         }
         Column() {
-            ButtonsHome(homeVM, mem)
+            ButtonStartRestartContinue(homeVM, mem)
             MyVerticalSpacer(MaterialTheme.spacing.medium)
-
-            val activity: Activity? = (LocalContext.current as? Activity)
-            var show by rememberSaveable { mutableStateOf(false) }
-            MyButton(
-                onclick = { show = true },
-                text = stringResource(id = R.string.home_exit),
-                colors = MaterialTheme.colors.secondary,
-            )
+            ButtonExit(onclick = { show = true })
             MyDialog(show, { show = false }, { homeVM.onEvent(HomeEvent.OnExit(activity)) })
         }
     }
@@ -124,7 +110,7 @@ fun Animation() {
 }
 
 @Composable
-fun ButtonsHome(homeVM: HomeVM, mem: Boolean?) {
+fun ButtonStartRestartContinue(homeVM: HomeVM, mem: Boolean?) {
     if (mem!!) {
         MyButton(
             onclick = { homeVM.onEvent(HomeEvent.OnStart) },
@@ -142,7 +128,15 @@ fun ButtonsHome(homeVM: HomeVM, mem: Boolean?) {
             colors = MaterialTheme.colors.secondaryVariant
         )
     }
+}
 
+@Composable
+fun ButtonExit(onclick: () -> Unit) {
+    MyButton(
+        onclick = { onclick() },
+        text = stringResource(id = R.string.home_exit),
+        colors = MaterialTheme.colors.secondary,
+    )
 }
 
 @Composable
@@ -182,40 +176,5 @@ fun MyDialog(
             },
             backgroundColor = MaterialTheme.colors.background
         )
-    }
-}
-
-
-@Preview(name = "Light",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showSystemUi = true,
-    showBackground = true)
-@Preview(name = "Dark",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showSystemUi = true,
-    showBackground = true)
-@Composable
-fun StartPreview() {
-    Quiz1Theme {
-        Surface() {
-            HomeScreen(onNavigate = {}, homeVM = HomeVM(), mem = true)
-        }
-    }
-}
-
-@Preview(name = "Light",
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    showSystemUi = true,
-    showBackground = true)
-@Preview(name = "Dark",
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showSystemUi = true,
-    showBackground = true)
-@Composable
-fun RestartPreview() {
-    Quiz1Theme {
-        Surface() {
-            HomeScreen(onNavigate = {}, homeVM = HomeVM(), mem = false)
-        }
     }
 }
