@@ -98,6 +98,8 @@ fun LandscapeContentHome(homeVM: HomeVM, mem: Boolean?) {
     }
 }
 
+/* Main Composables */
+
 @Composable
 fun Animation() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie))

@@ -112,7 +112,6 @@ class QuestionVM @Inject constructor(
         else userAnswer == questions[index].result
 
         state.userAnswers[index] = userBoolean
-        Log.i("MyTag", "validateUserOption: ${state.userAnswers.toList()}")
         if (userOptions[index] == "") {
             userOptions[index] = state.optionSelected
         }

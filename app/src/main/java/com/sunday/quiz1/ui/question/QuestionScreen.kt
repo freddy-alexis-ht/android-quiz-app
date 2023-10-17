@@ -138,7 +138,7 @@ fun LandscapeContentQuestion(
     }
 }
 
-/* Composables */
+/* Main Composables */
 
 @Composable
 fun RowTimer(questionVM: QuestionVM) {
