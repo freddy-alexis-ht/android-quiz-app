@@ -1,9 +1,12 @@
 package com.sunday.quiz1.ui.result
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -12,15 +15,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.question.QuestionVM
 import com.sunday.quiz1.R
 import com.sunday.quiz1.data.model.Question
-import com.sunday.quiz1.ui.common.MyButton
 import com.sunday.quiz1.ui.common.MyHorizontalSpacer
 import com.sunday.quiz1.ui.common.MyVerticalSpacer
+import com.sunday.quiz1.ui.common.VerticalDivider
 import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
@@ -48,13 +51,60 @@ fun ResultScreen(
         resultVM.updateResultState(ResultState())
     }
 
+    val configuration = LocalConfiguration.current
+    when (configuration.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> {
+            PortraitContentResult(questions, resultVM, result, userAnswers, userOptions, isDetailVisible)
+        }
+        else -> {
+            LandscapeContentResult(questions, resultVM, result, userAnswers, userOptions, isDetailVisible)
+        }
+    }
+
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(MaterialTheme.spacing.mediumPlus),
+//        verticalArrangement = Arrangement.Top,
+//    ) {
+//
+//        RowResults(
+//            text = stringResource(id = R.string.result_summary),
+//            onHome = { resultVM.onEvent(ResultEvent.OnHome) }
+//        )
+//        MyVerticalSpacer(MaterialTheme.spacing.medium)
+//
+//        CardResults(result.totalQuestions,
+//            result.totalCorrect,
+//            result.totalIncorrect,
+//            result.totalNotAnswered)
+//        MyVerticalSpacer(MaterialTheme.spacing.mediumPlus)
+//
+//        Divider(color = MaterialTheme.colors.secondaryVariant, thickness = MaterialTheme.spacing.simple)
+//        MyVerticalSpacer(MaterialTheme.spacing.small)
+//
+//        RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
+//        MyVerticalSpacer(MaterialTheme.spacing.small)
+//
+//        LazyCardDetails(questions, resultVM, userAnswers, userOptions)
+//    }
+}
+
+@Composable
+fun PortraitContentResult(
+    questions: List<Question>,
+    resultVM: ResultVM,
+    result: ResultState,
+    userAnswers: MutableList<Boolean?>,
+    userOptions: MutableList<String>,
+    isDetailVisible: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(MaterialTheme.spacing.mediumPlus),
         verticalArrangement = Arrangement.Top,
     ) {
-
         RowResults(
             text = stringResource(id = R.string.result_summary),
             onHome = { resultVM.onEvent(ResultEvent.OnHome) }
@@ -73,21 +123,55 @@ fun ResultScreen(
         RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
         MyVerticalSpacer(MaterialTheme.spacing.small)
 
-        LazyColumn {
-            itemsIndexed(questions) { index, question ->
-                val isCardVisible =
-                    if (userAnswers[index] == true) resultVM.resultState.isCorrectVisible
-                    else if (userAnswers[index] == false) resultVM.resultState.isIncorrectVisible
-                    else resultVM.resultState.isNotAnsweredVisible
+        LazyCardDetails(questions, resultVM, userAnswers, userOptions)
+    }
+}
 
-                if (isCardVisible) CardDetails(index,
-                    question,
-                    userAnswers[index],
-                    userOptions[index])
-            }
+@Composable
+fun LandscapeContentResult(
+    questions: List<Question>,
+    resultVM: ResultVM,
+    result: ResultState,
+    userAnswers: MutableList<Boolean?>,
+    userOptions: MutableList<String>,
+    isDetailVisible: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.mediumPlus),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(end = MaterialTheme.spacing.medium)
+        ) {
+            RowResults(
+                text = stringResource(id = R.string.result_summary),
+                onHome = { resultVM.onEvent(ResultEvent.OnHome) }
+            )
+            MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+            CardResults(result.totalQuestions,
+                result.totalCorrect,
+                result.totalIncorrect,
+                result.totalNotAnswered)
+        }
+        VerticalDivider()
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(start = MaterialTheme.spacing.medium)
+        ) {
+            RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
+            MyVerticalSpacer(MaterialTheme.spacing.small)
+
+            LazyCardDetails(questions, resultVM, userAnswers, userOptions)
         }
     }
 }
+
+/* Main Composables */
 
 @Composable
 fun RowResults(text: String, onHome: () -> Unit) {
@@ -215,6 +299,28 @@ fun ButtonFilter(
                     )
                 )
             }
+    }
+}
+
+@Composable
+fun LazyCardDetails(
+    questions: List<Question>,
+    resultVM: ResultVM,
+    userAnswers: MutableList<Boolean?>,
+    userOptions: MutableList<String>
+) {
+    LazyColumn {
+        itemsIndexed(questions) { index, question ->
+            val isCardVisible =
+                if (userAnswers[index] == true) resultVM.resultState.isCorrectVisible
+                else if (userAnswers[index] == false) resultVM.resultState.isIncorrectVisible
+                else resultVM.resultState.isNotAnsweredVisible
+
+            if (isCardVisible) CardDetails(index,
+                question,
+                userAnswers[index],
+                userOptions[index])
+        }
     }
 }
 
