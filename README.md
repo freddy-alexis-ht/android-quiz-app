@@ -1,4 +1,8 @@
-###DESCRIPTION
+### QUIZ APP
+  
+### Description:
+
+Quiz app for general knowledge.  
 
 ***
 **Home Screen**  
