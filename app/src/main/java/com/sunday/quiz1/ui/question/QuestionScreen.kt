@@ -1,5 +1,6 @@
 package com.sunday.quiz1.ui.question
 
+import android.content.res.Configuration
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
@@ -14,6 +15,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.R
@@ -49,6 +51,25 @@ fun QuestionScreen(
         }
     }
 
+    val configuration = LocalConfiguration.current
+    when (configuration.orientation) {
+        Configuration.ORIENTATION_PORTRAIT -> {
+            PortraitContentQuestion(questionVM, index, numberOfQuestions, questions, lazyListState)
+        }
+        else -> {
+            LandscapeContentQuestion(questionVM, index, numberOfQuestions, questions, lazyListState)
+        }
+    }
+}
+
+@Composable
+fun PortraitContentQuestion(
+    questionVM: QuestionVM,
+    index: Int,
+    numberOfQuestions: Int,
+    questions: List<Question>,
+    lazyListState: LazyListState,
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
@@ -72,6 +93,52 @@ fun QuestionScreen(
         ButtonNav(questionVM, index, lazyListState)
     }
 }
+
+@Composable
+fun LandscapeContentQuestion(
+    questionVM: QuestionVM,
+    index: Int,
+    numberOfQuestions: Int,
+    questions: List<Question>,
+    lazyListState: LazyListState,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.spacing.mediumPlus),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(end = MaterialTheme.spacing.medium)
+            .verticalScroll(rememberScrollState())
+        ) {
+            RowQuestion(index, questions)
+            MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+            RadioButtonOptions(questionVM, index, questions)
+            MyVerticalSpacer(MaterialTheme.spacing.large)
+        }
+        VerticalDivider()
+        Column(modifier = Modifier
+            .weight(1f)
+            .padding(start = MaterialTheme.spacing.medium)) {
+            RowTimer(questionVM)
+            MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
+
+            RowProgression(questionVM, index, numberOfQuestions, lazyListState)
+            MyVerticalSpacer(MaterialTheme.spacing.medium)
+
+            RowQuestionSwitch(questionVM, index, numberOfQuestions, lazyListState)
+            MyVerticalSpacer(MaterialTheme.spacing.large)
+
+            ButtonNav(questionVM, index, lazyListState)
+        }
+    }
+}
+
+/* Composables */
 
 @Composable
 fun RowTimer(questionVM: QuestionVM) {

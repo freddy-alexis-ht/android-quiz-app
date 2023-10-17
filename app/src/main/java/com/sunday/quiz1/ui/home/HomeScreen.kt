@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
@@ -19,7 +18,6 @@ import com.sunday.quiz1.R
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.common.MyButton
 import com.sunday.quiz1.ui.common.MyVerticalSpacer
-import com.sunday.quiz1.ui.theme.Quiz1Theme
 import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
@@ -47,17 +45,17 @@ fun HomeScreen(
     } else {
         when (configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
-                PortraitContent(homeVM, mem)
+                PortraitContentHome(homeVM, mem)
             }
             else -> {
-                LandscapeContent(homeVM, mem)
+                LandscapeContentHome(homeVM, mem)
             }
         }
     }
 }
 
 @Composable
-fun PortraitContent(homeVM: HomeVM, mem: Boolean?) {
+fun PortraitContentHome(homeVM: HomeVM, mem: Boolean?) {
     val activity: Activity? = (LocalContext.current as? Activity)
     var show by rememberSaveable { mutableStateOf(false) }
 
@@ -77,7 +75,7 @@ fun PortraitContent(homeVM: HomeVM, mem: Boolean?) {
 }
 
 @Composable
-fun LandscapeContent(homeVM: HomeVM, mem: Boolean?) {
+fun LandscapeContentHome(homeVM: HomeVM, mem: Boolean?) {
     val activity: Activity? = (LocalContext.current as? Activity)
     var show by rememberSaveable { mutableStateOf(false) }
 
