@@ -10,7 +10,8 @@ class GetAllQuestionsUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(): Answer<List<Question>> {
-        return repository.getQuestions()
+        return repository.getQuestionsFromFile()
+//        return repository.getQuestionsFromProvider()
     }
 
 }

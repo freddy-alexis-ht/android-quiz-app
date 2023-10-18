@@ -74,6 +74,7 @@ fun PortraitContentQuestion(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(MaterialTheme.spacing.mediumPlus)
+            .verticalScroll(rememberScrollState())
     ) {
         RowTimer(questionVM)
         MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
@@ -90,7 +91,7 @@ fun PortraitContentQuestion(
         RadioButtonOptions(questionVM, index, questions)
         MyVerticalSpacer(MaterialTheme.spacing.large)
 
-        ButtonNav(questionVM, index, lazyListState)
+        ButtonNav(questionVM, index, lazyListState, questions.size)
     }
 }
 
@@ -133,7 +134,7 @@ fun LandscapeContentQuestion(
             RowQuestionSwitch(questionVM, index, numberOfQuestions, lazyListState)
             MyVerticalSpacer(MaterialTheme.spacing.large)
 
-            ButtonNav(questionVM, index, lazyListState)
+            ButtonNav(questionVM, index, lazyListState, questions.size)
         }
     }
 }
@@ -340,9 +341,9 @@ fun RadioButtonOptions(questionVM: QuestionVM, index: Int, questions: List<Quest
 }
 
 @Composable
-fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState) {
+fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState, size: Int) {
     val coroutineScope = rememberCoroutineScope()
-    if (index != Question.getList().size - 1) {
+    if (index != size - 1) {
         MyButton(
             onclick = {
                 questionVM.onEvent(QuestionEvent.OnNext(index))
