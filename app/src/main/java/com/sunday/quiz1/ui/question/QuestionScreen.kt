@@ -79,6 +79,7 @@ fun PortraitContentQuestion(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier.padding(MaterialTheme.spacing.mediumPlus)
+            .verticalScroll(rememberScrollState())
     ) {
         RowTimer(questionVM)
         MyVerticalSpacer(MaterialTheme.spacing.extraSmall)
