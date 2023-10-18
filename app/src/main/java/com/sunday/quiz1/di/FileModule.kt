@@ -16,7 +16,7 @@ object FileModule {
 
     @Singleton
     @Provides
-    fun provideDataStore(@ApplicationContext context: Context): IFile {
+    fun provideContext(@ApplicationContext context: Context): IFile {
         return FileImpl(context)
     }
 }
