@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.sunday.quiz1.R
 import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.ui.common.*
+import com.sunday.quiz1.ui.theme.customColors
 import com.sunday.quiz1.ui.theme.spacing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -221,7 +222,7 @@ fun IconButtonPrevious(
             },
             modifier = Modifier.background(
                 if (index != 0) MaterialTheme.colors.secondary
-                else MaterialTheme.colors.surface
+                else MaterialTheme.customColors.background1
             ),
             enabled = index != 0,
         ) {
@@ -415,7 +416,7 @@ fun MyDialog(
                     )
                 }
             },
-            backgroundColor = MaterialTheme.colors.background
+            backgroundColor = MaterialTheme.customColors.background2
         )
     }
 }
