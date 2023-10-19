@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -24,6 +22,7 @@ import com.sunday.quiz1.data.model.Question
 import com.sunday.quiz1.ui.common.MyHorizontalSpacer
 import com.sunday.quiz1.ui.common.MyVerticalSpacer
 import com.sunday.quiz1.ui.common.VerticalDivider
+import com.sunday.quiz1.ui.theme.customColors
 import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
@@ -178,7 +177,7 @@ fun CardResults(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .wrapContentHeight(),
-        backgroundColor = MaterialTheme.colors.secondaryVariant,
+        backgroundColor = MaterialTheme.colors.surface,
         shape = MaterialTheme.shapes.medium,
     ) {
         Box(contentAlignment = Alignment.CenterStart) {
@@ -293,10 +292,8 @@ fun LazyCardDetails(
                 else if (userAnswers[index] == false) resultVM.resultState.isIncorrectVisible
                 else resultVM.resultState.isNotAnsweredVisible
 
-            if (isCardVisible) CardDetails(index,
-                question,
-                userAnswers[index],
-                userOptions[index])
+            if (isCardVisible)
+                CardDetails(index, question, userAnswers[index], userOptions[index])
         }
     }
 }
@@ -313,7 +310,7 @@ fun CardDetails(
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
             .wrapContentHeight(),
-        backgroundColor = MaterialTheme.colors.secondaryVariant,
+        backgroundColor = MaterialTheme.colors.surface,
         shape = MaterialTheme.shapes.medium
     ) {
         Box(modifier = Modifier.padding(horizontal = MaterialTheme.spacing.medium),
@@ -364,12 +361,13 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
                     .wrapContentHeight(),
-                    backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.2f)) {
+                    backgroundColor = MaterialTheme.customColors.background1.copy(alpha = 0.2f),
+                ) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircleOutline,
                             contentDescription = stringResource(id = R.string.result_correct),
-                            tint = MaterialTheme.colors.surface
+                            tint = MaterialTheme.customColors.background1
                         )
                         MyHorizontalSpacer(MaterialTheme.spacing.extraSmall)
                         TextOption(it)
@@ -380,7 +378,8 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
                     .fillMaxWidth()
                     .height(IntrinsicSize.Min)
                     .wrapContentHeight(),
-                    backgroundColor = MaterialTheme.colors.error.copy(alpha = 0.2f)) {
+                    backgroundColor = MaterialTheme.colors.error.copy(alpha = 0.2f),
+                ) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
                             imageVector = Icons.Filled.HighlightOff,

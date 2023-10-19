@@ -18,6 +18,7 @@ import com.sunday.quiz1.R
 import com.sunday.quiz1.ui.common.AppEvent
 import com.sunday.quiz1.ui.common.MyButton
 import com.sunday.quiz1.ui.common.MyVerticalSpacer
+import com.sunday.quiz1.ui.theme.customColors
 import com.sunday.quiz1.ui.theme.spacing
 
 @Composable
@@ -174,7 +175,7 @@ fun MyDialog(
                     )
                 }
             },
-            backgroundColor = MaterialTheme.colors.background
+            backgroundColor = MaterialTheme.customColors.background2
         )
     }
 }
