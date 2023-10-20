@@ -45,9 +45,14 @@ fun QuestionScreen(
             }
         }
     }
-    LaunchedEffect(newQuiz) {
-        if (newQuiz!!) {
-            questionVM.clearUserOptions()
+
+    var lastNewQuiz: Boolean? by rememberSaveable { mutableStateOf(null) }
+    if (lastNewQuiz != newQuiz) {
+        lastNewQuiz = newQuiz
+        LaunchedEffect(newQuiz) {
+            if (newQuiz!!) {
+                questionVM.clearUserOptions()
+            }
         }
     }
 
@@ -90,7 +95,7 @@ fun PortraitContentQuestion(
         RadioButtonOptions(questionVM, index, questions)
         MyVerticalSpacer(MaterialTheme.spacing.large)
 
-        ButtonNav(questionVM, index, lazyListState)
+        ButtonNav(questionVM, index, numberOfQuestions, lazyListState)
     }
 }
 
@@ -133,7 +138,7 @@ fun LandscapeContentQuestion(
             RowQuestionSwitch(questionVM, index, numberOfQuestions, lazyListState)
             MyVerticalSpacer(MaterialTheme.spacing.large)
 
-            ButtonNav(questionVM, index, lazyListState)
+            ButtonNav(questionVM, index, numberOfQuestions, lazyListState)
         }
     }
 }
@@ -340,9 +345,9 @@ fun RadioButtonOptions(questionVM: QuestionVM, index: Int, questions: List<Quest
 }
 
 @Composable
-fun ButtonNav(questionVM: QuestionVM, index: Int, lazyListState: LazyListState) {
+fun ButtonNav(questionVM: QuestionVM, index: Int, numberOfQuestions: Int, lazyListState: LazyListState) {
     val coroutineScope = rememberCoroutineScope()
-    if (index != Question.getList().size - 1) {
+    if (index != numberOfQuestions - 1) {
         MyButton(
             onclick = {
                 questionVM.onEvent(QuestionEvent.OnNext(index))
