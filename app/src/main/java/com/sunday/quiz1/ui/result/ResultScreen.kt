@@ -10,8 +10,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,7 +33,7 @@ fun ResultScreen(
     questionVM: QuestionVM,
 ) {
     val result = resultVM.resultState
-    val isDetailVisible = resultVM.resultState.isDetailVisible
+    var isDetailVisible = resultVM.resultState.isDetailVisible
 
     val userAnswers: MutableList<Boolean?> = ResultState.userAnswers
     val userOptions: MutableList<String> = ResultState.userOptions
@@ -47,8 +47,13 @@ fun ResultScreen(
             }
         }
     }
-    LaunchedEffect(key1 = true) {
-        resultVM.updateResultState(ResultState())
+
+    var value1: Boolean? by rememberSaveable { mutableStateOf(true) }
+    if (value1 == true) {
+        value1 = false
+        LaunchedEffect(key1 = true) {
+            resultVM.updateResultState(ResultState())
+        }
     }
 
     val configuration = LocalConfiguration.current
@@ -60,34 +65,6 @@ fun ResultScreen(
             LandscapeContentResult(questions, resultVM, result, userAnswers, userOptions, isDetailVisible)
         }
     }
-
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(MaterialTheme.spacing.mediumPlus),
-//        verticalArrangement = Arrangement.Top,
-//    ) {
-//
-//        RowResults(
-//            text = stringResource(id = R.string.result_summary),
-//            onHome = { resultVM.onEvent(ResultEvent.OnHome) }
-//        )
-//        MyVerticalSpacer(MaterialTheme.spacing.medium)
-//
-//        CardResults(result.totalQuestions,
-//            result.totalCorrect,
-//            result.totalIncorrect,
-//            result.totalNotAnswered)
-//        MyVerticalSpacer(MaterialTheme.spacing.mediumPlus)
-//
-//        Divider(color = MaterialTheme.colors.secondaryVariant, thickness = MaterialTheme.spacing.simple)
-//        MyVerticalSpacer(MaterialTheme.spacing.small)
-//
-//        RowDetails(text = stringResource(id = R.string.result_detail), isDetailVisible, resultVM)
-//        MyVerticalSpacer(MaterialTheme.spacing.small)
-//
-//        LazyCardDetails(questions, resultVM, userAnswers, userOptions)
-//    }
 }
 
 @Composable
@@ -385,7 +362,8 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
             if (it == result) {
                 Card(modifier = Modifier
                     .fillMaxWidth()
-                    .height(MaterialTheme.spacing.mediumPlus),
+                    .height(IntrinsicSize.Min)
+                    .wrapContentHeight(),
                     backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.2f)) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
@@ -400,7 +378,8 @@ fun DetailOptions(options: List<String>, result: String, userOption: String) {
             } else if (it == userOption) {
                 Card(modifier = Modifier
                     .fillMaxWidth()
-                    .height(MaterialTheme.spacing.mediumPlus),
+                    .height(IntrinsicSize.Min)
+                    .wrapContentHeight(),
                     backgroundColor = MaterialTheme.colors.error.copy(alpha = 0.2f)) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         Icon(
